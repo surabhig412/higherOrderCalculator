@@ -1,0 +1,177 @@
+
+state 0
+	$accept: .list $end 
+	list: .    (1)
+
+	.  reduce 1 (src line 20)
+
+	list  goto 1
+
+state 1
+	$accept:  list.$end 
+	list:  list.'\n' 
+	list:  list.expr '\n' 
+
+	$end  accept
+	NUMBER  shift 5
+	'\n'  shift 2
+	'('  shift 4
+	.  error
+
+	expr  goto 3
+
+state 2
+	list:  list '\n'.    (2)
+
+	.  reduce 2 (src line 21)
+
+
+state 3
+	list:  list expr.'\n' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'+'  shift 7
+	'-'  shift 8
+	'*'  shift 9
+	'/'  shift 10
+	'\n'  shift 6
+	.  error
+
+
+state 4
+	expr:  '('.expr ')' 
+
+	NUMBER  shift 5
+	'('  shift 4
+	.  error
+
+	expr  goto 11
+
+state 5
+	expr:  NUMBER.    (9)
+
+	.  reduce 9 (src line 29)
+
+
+state 6
+	list:  list expr '\n'.    (3)
+
+	.  reduce 3 (src line 22)
+
+
+state 7
+	expr:  expr '+'.expr 
+
+	NUMBER  shift 5
+	'('  shift 4
+	.  error
+
+	expr  goto 12
+
+state 8
+	expr:  expr '-'.expr 
+
+	NUMBER  shift 5
+	'('  shift 4
+	.  error
+
+	expr  goto 13
+
+state 9
+	expr:  expr '*'.expr 
+
+	NUMBER  shift 5
+	'('  shift 4
+	.  error
+
+	expr  goto 14
+
+state 10
+	expr:  expr '/'.expr 
+
+	NUMBER  shift 5
+	'('  shift 4
+	.  error
+
+	expr  goto 15
+
+state 11
+	expr:  '(' expr.')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'+'  shift 7
+	'-'  shift 8
+	'*'  shift 9
+	'/'  shift 10
+	')'  shift 16
+	.  error
+
+
+state 12
+	expr:  expr.'+' expr 
+	expr:  expr '+' expr.    (5)
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'*'  shift 9
+	'/'  shift 10
+	.  reduce 5 (src line 25)
+
+
+state 13
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr '-' expr.    (6)
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+
+	'*'  shift 9
+	'/'  shift 10
+	.  reduce 6 (src line 26)
+
+
+state 14
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr '*' expr.    (7)
+	expr:  expr.'/' expr 
+
+	.  reduce 7 (src line 27)
+
+
+state 15
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr '/' expr.    (8)
+
+	.  reduce 8 (src line 28)
+
+
+state 16
+	expr:  '(' expr ')'.    (4)
+
+	.  reduce 4 (src line 24)
+
+
+11 terminals, 3 nonterminals
+10 grammar rules, 17/8000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+52 working sets used
+memory: parser 6/120000
+11 extra closures
+27 shift entries, 1 exceptions
+7 goto entries
+0 entries saved by goto default
+Optimizer space used: output 28/120000
+28 table entries, 4 zero
+maximum spread: 11, maximum offset: 10
