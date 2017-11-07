@@ -13,21 +13,27 @@ import (
 	"strconv"
 )
 
-//line hoc.y:12
+var mem [26]int
+
+//line hoc.y:15
 type yySymType struct {
-	yys int
-	val int
+	yys   int
+	val   int
+	index int
 }
 
 const NUMBER = 57346
-const UNARYMINUS = 57347
-const UNARYPLUS = 57348
+const VAR = 57347
+const UNARYMINUS = 57348
+const UNARYPLUS = 57349
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
 	"NUMBER",
+	"VAR",
+	"'='",
 	"'%'",
 	"'+'",
 	"'-'",
@@ -45,7 +51,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line hoc.y:37
+//line hoc.y:52
 
 type Lexer struct {
 	s   string
@@ -97,59 +103,62 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 45
+const yyLast = 52
 
 var yyAct = [...]int{
 
-	3, 10, 11, 12, 13, 14, 1, 15, 16, 0,
-	17, 18, 19, 20, 21, 9, 10, 11, 12, 13,
-	12, 13, 0, 0, 22, 9, 10, 11, 12, 13,
-	0, 5, 8, 7, 6, 5, 0, 7, 6, 2,
-	4, 0, 0, 0, 4,
+	3, 11, 12, 13, 14, 15, 17, 16, 18, 19,
+	26, 20, 21, 22, 23, 24, 25, 4, 1, 6,
+	9, 27, 0, 8, 7, 0, 0, 6, 9, 2,
+	5, 8, 7, 11, 12, 13, 14, 15, 5, 0,
+	10, 11, 12, 13, 14, 15, 12, 13, 14, 15,
+	14, 15,
 }
 var yyPact = [...]int{
 
-	-1000, 27, -1000, 20, 31, -1000, 31, 31, -1000, 31,
-	31, 31, 31, 31, 10, -1000, -1000, -5, 12, 12,
-	-1000, -1000, -1000,
+	-1000, 15, -1000, 26, -7, 23, -1000, 23, 23, 5,
+	-1000, 23, 23, 23, 23, 23, -1000, -6, -1000, -1000,
+	23, 38, 40, 40, -1000, -1000, -1000, 34,
 }
 var yyPgo = [...]int{
 
-	0, 0, 6,
+	0, 0, 18,
 }
 var yyR1 = [...]int{
 
-	0, 2, 2, 2, 1, 1, 1, 1, 1, 1,
-	1, 1, 1,
+	0, 2, 2, 2, 2, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1,
 }
 var yyR2 = [...]int{
 
 	0, 0, 2, 3, 3, 3, 3, 3, 3, 3,
-	1, 2, 2,
+	3, 1, 2, 2, 1, 3,
 }
 var yyChk = [...]int{
 
-	-1000, -2, 12, -1, 13, 4, 7, 6, 12, 5,
-	6, 7, 8, 9, -1, -1, -1, -1, -1, -1,
-	-1, -1, 14,
+	-1000, -2, 14, -1, 2, 15, 4, 9, 8, 5,
+	14, 7, 8, 9, 10, 11, 14, -1, -1, -1,
+	6, -1, -1, -1, -1, -1, 16, -1,
 }
 var yyDef = [...]int{
 
-	1, -2, 2, 0, 0, 10, 0, 0, 3, 0,
-	0, 0, 0, 0, 0, 11, 12, 5, 6, 7,
-	8, 9, 4,
+	1, -2, 2, 0, 0, 0, 11, 0, 0, 14,
+	3, 0, 0, 0, 0, 0, 4, 0, 12, 13,
+	0, 6, 7, 8, 9, 10, 5, 15,
 }
 var yyTok1 = [...]int{
 
 	1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	12, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	14, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 5, 3, 3,
-	13, 14, 8, 6, 3, 7, 3, 9,
+	3, 3, 3, 3, 3, 3, 3, 7, 3, 3,
+	15, 16, 10, 8, 3, 9, 3, 11, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 6,
 }
 var yyTok2 = [...]int{
 
-	2, 3, 4, 10, 11,
+	2, 3, 4, 5, 12, 13,
 }
 var yyTok3 = [...]int{
 	0,
@@ -494,63 +503,85 @@ yydefault:
 
 	case 3:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:25
+		//line hoc.y:31
 		{
 			fmt.Printf("%d\n", yyDollar[2].val)
 		}
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:27
+		//line hoc.y:32
 		{
-			yyVAL.val = yyDollar[2].val
+			fmt.Printf("error occurred")
 		}
 	case 5:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:28
+		//line hoc.y:34
 		{
-			yyVAL.val = yyDollar[1].val % yyDollar[3].val
+			yyVAL.val = yyDollar[2].val
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:29
+		//line hoc.y:35
 		{
-			yyVAL.val = yyDollar[1].val + yyDollar[3].val
+			yyVAL.val = yyDollar[1].val % yyDollar[3].val
 		}
 	case 7:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:30
+		//line hoc.y:36
 		{
-			yyVAL.val = yyDollar[1].val - yyDollar[3].val
+			yyVAL.val = yyDollar[1].val + yyDollar[3].val
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:31
+		//line hoc.y:37
 		{
-			yyVAL.val = yyDollar[1].val * yyDollar[3].val
+			yyVAL.val = yyDollar[1].val - yyDollar[3].val
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:32
+		//line hoc.y:38
 		{
-			yyVAL.val = yyDollar[1].val / yyDollar[3].val
+			yyVAL.val = yyDollar[1].val * yyDollar[3].val
 		}
 	case 10:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:39
+		{
+			if yyDollar[3].val == 0.0 {
+				log.Fatalf("division by zero")
+			}
+			yyVAL.val = yyDollar[1].val / yyDollar[3].val
+		}
+	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:33
+		//line hoc.y:44
 		{
 			yyVAL.val = yyDollar[1].val
 		}
-	case 11:
+	case 12:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:34
+		//line hoc.y:45
 		{
 			yyVAL.val = -yyDollar[2].val
 		}
-	case 12:
+	case 13:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:35
+		//line hoc.y:46
 		{
 			yyVAL.val = yyDollar[2].val
+		}
+	case 14:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line hoc.y:47
+		{
+			yyVAL.val = mem[yyDollar[1].index]
+		}
+	case 15:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:48
+		{
+			yyVAL.val = mem[yyDollar[1].index]
+			mem[yyDollar[1].index] = yyDollar[3].val
 		}
 	}
 	goto yystack /* stack new state and value */

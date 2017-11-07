@@ -7,13 +7,19 @@
     "log"
     "io"
     "strconv"
+    "log"
   )
+  var mem[26] int
 %}
+
 %union{
 	val int
+  index int
 }
 %type <val> expr
 %token <val> NUMBER
+%token <index> VAR
+%right '='
 %left '%'
 %left '+' '-'
 %left '*' '/'
@@ -23,16 +29,25 @@
 list:   /* empty */
       | list '\n'
       | list expr '\n'  {fmt.Printf("%d\n", $2)}
+      | list error '\n' {fmt.Printf("error occurred")}
       ;
 expr:   '('expr')'    {$$ = $2}
       | expr '%' expr {$$ = $1 % $3}
       | expr '+' expr {$$ = $1 + $3}
       | expr '-' expr {$$ = $1 - $3}
       | expr '*' expr {$$ = $1 * $3}
-      | expr '/' expr {$$ = $1 / $3}
+      | expr '/' expr {
+              if($3 == 0.0) {
+                log.Fatalf("division by zero")
+              }
+              $$ = $1 / $3}
       | NUMBER        {$$ = $1}
       | '-' expr %prec UNARYMINUS {$$ = -$2}
       | '+' expr %prec UNARYPLUS {$$ = $2}
+      | VAR            {$$ = mem[$1]}
+      | VAR '=' expr   {
+                        $$ = mem[$1]
+                        mem[$1] = $3}
       ;
 %%
 
