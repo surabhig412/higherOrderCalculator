@@ -3,7 +3,7 @@
 *.dll
 *.so
 *.dylib
-higherOrderCalculator
+hoc
 
 # Test binary, build with `go test -c`
 *.test

@@ -14,19 +14,25 @@
 }
 %type <val> expr
 %token <val> NUMBER
+%left '%'
 %left '+' '-'
 %left '*' '/'
+%left UNARYMINUS
+%left UNARYPLUS
 %%
 list:   /* empty */
       | list '\n'
       | list expr '\n'  {fmt.Printf("%d\n", $2)}
       ;
 expr:   '('expr')'    {$$ = $2}
+      | expr '%' expr {$$ = $1 % $3}
       | expr '+' expr {$$ = $1 + $3}
       | expr '-' expr {$$ = $1 - $3}
       | expr '*' expr {$$ = $1 * $3}
       | expr '/' expr {$$ = $1 / $3}
       | NUMBER        {$$ = $1}
+      | '-' expr %prec UNARYMINUS {$$ = -$2}
+      | '+' expr %prec UNARYPLUS {$$ = $2}
       ;
 %%
 
@@ -34,7 +40,6 @@ type Lexer struct {
   s string
   pos int
 }
-var lineNo int
 func (l *Lexer) Lex(lval *yySymType) int {
   var c rune = ' '
   for c == ' ' || c == '\t' {
@@ -50,18 +55,14 @@ func (l *Lexer) Lex(lval *yySymType) int {
     lval.val = int(c) - '0'
     return NUMBER
   }
-  if c == '\n' {
-    lineNo++
-  }
   return int(c)
 }
 
 func (l *Lexer) Error(s string) {
-  fmt.Fprintf(os.Stderr, "%s: %s near line %d\n", "HOC", s, lineNo)
+  fmt.Fprintf(os.Stderr, "%s: %s", "HOC", s)
 }
 
 func main() {
-  fmt.Println("In main function")
   reader := bufio.NewReader(os.Stdin)
   for {
   str, err := reader.ReadString('\n')

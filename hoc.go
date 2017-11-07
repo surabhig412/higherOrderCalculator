@@ -20,16 +20,21 @@ type yySymType struct {
 }
 
 const NUMBER = 57346
+const UNARYMINUS = 57347
+const UNARYPLUS = 57348
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
 	"NUMBER",
+	"'%'",
 	"'+'",
 	"'-'",
 	"'*'",
 	"'/'",
+	"UNARYMINUS",
+	"UNARYPLUS",
 	"'\\n'",
 	"'('",
 	"')'",
@@ -40,14 +45,12 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line hoc.y:31
+//line hoc.y:37
 
 type Lexer struct {
 	s   string
 	pos int
 }
-
-var lineNo int
 
 func (l *Lexer) Lex(lval *yySymType) int {
 	var c rune = ' '
@@ -64,18 +67,14 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		lval.val = int(c) - '0'
 		return NUMBER
 	}
-	if c == '\n' {
-		lineNo++
-	}
 	return int(c)
 }
 
 func (l *Lexer) Error(s string) {
-	fmt.Fprintf(os.Stderr, "%s: %s near line %d\n", "HOC", s, lineNo)
+	fmt.Fprintf(os.Stderr, "%s: %s", "HOC", s)
 }
 
 func main() {
-	fmt.Println("In main function")
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		str, err := reader.ReadString('\n')
@@ -98,52 +97,59 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 28
+const yyLast = 45
 
 var yyAct = [...]int{
 
-	7, 8, 9, 10, 3, 5, 16, 9, 10, 11,
-	2, 4, 12, 13, 14, 15, 7, 8, 9, 10,
-	6, 5, 1, 0, 0, 0, 0, 4,
+	3, 10, 11, 12, 13, 14, 1, 15, 16, 0,
+	17, 18, 19, 20, 21, 9, 10, 11, 12, 13,
+	12, 13, 0, 0, 22, 9, 10, 11, 12, 13,
+	0, 5, 8, 7, 6, 5, 0, 7, 6, 2,
+	4, 0, 0, 0, 4,
 }
 var yyPact = [...]int{
 
-	-1000, 1, -1000, 11, 17, -1000, -1000, 17, 17, 17,
-	17, -5, 0, 0, -1000, -1000, -1000,
+	-1000, 27, -1000, 20, 31, -1000, 31, 31, -1000, 31,
+	31, 31, 31, 31, 10, -1000, -1000, -5, 12, 12,
+	-1000, -1000, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 4, 22,
+	0, 0, 6,
 }
 var yyR1 = [...]int{
 
 	0, 2, 2, 2, 1, 1, 1, 1, 1, 1,
+	1, 1, 1,
 }
 var yyR2 = [...]int{
 
-	0, 0, 2, 3, 3, 3, 3, 3, 3, 1,
+	0, 0, 2, 3, 3, 3, 3, 3, 3, 3,
+	1, 2, 2,
 }
 var yyChk = [...]int{
 
-	-1000, -2, 9, -1, 10, 4, 9, 5, 6, 7,
-	8, -1, -1, -1, -1, -1, 11,
+	-1000, -2, 12, -1, 13, 4, 7, 6, 12, 5,
+	6, 7, 8, 9, -1, -1, -1, -1, -1, -1,
+	-1, -1, 14,
 }
 var yyDef = [...]int{
 
-	1, -2, 2, 0, 0, 9, 3, 0, 0, 0,
-	0, 0, 5, 6, 7, 8, 4,
+	1, -2, 2, 0, 0, 10, 0, 0, 3, 0,
+	0, 0, 0, 0, 0, 11, 12, 5, 6, 7,
+	8, 9, 4,
 }
 var yyTok1 = [...]int{
 
 	1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	9, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	12, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	10, 11, 7, 5, 3, 6, 3, 8,
+	3, 3, 3, 3, 3, 3, 3, 5, 3, 3,
+	13, 14, 8, 6, 3, 7, 3, 9,
 }
 var yyTok2 = [...]int{
 
-	2, 3, 4,
+	2, 3, 4, 10, 11,
 }
 var yyTok3 = [...]int{
 	0,
@@ -488,45 +494,63 @@ yydefault:
 
 	case 3:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:22
+		//line hoc.y:25
 		{
 			fmt.Printf("%d\n", yyDollar[2].val)
 		}
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:24
+		//line hoc.y:27
 		{
 			yyVAL.val = yyDollar[2].val
 		}
 	case 5:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:25
+		//line hoc.y:28
 		{
-			yyVAL.val = yyDollar[1].val + yyDollar[3].val
+			yyVAL.val = yyDollar[1].val % yyDollar[3].val
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:26
+		//line hoc.y:29
 		{
-			yyVAL.val = yyDollar[1].val - yyDollar[3].val
+			yyVAL.val = yyDollar[1].val + yyDollar[3].val
 		}
 	case 7:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:27
+		//line hoc.y:30
 		{
-			yyVAL.val = yyDollar[1].val * yyDollar[3].val
+			yyVAL.val = yyDollar[1].val - yyDollar[3].val
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:28
+		//line hoc.y:31
+		{
+			yyVAL.val = yyDollar[1].val * yyDollar[3].val
+		}
+	case 9:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:32
 		{
 			yyVAL.val = yyDollar[1].val / yyDollar[3].val
 		}
-	case 9:
+	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:29
+		//line hoc.y:33
 		{
 			yyVAL.val = yyDollar[1].val
+		}
+	case 11:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		//line hoc.y:34
+		{
+			yyVAL.val = -yyDollar[2].val
+		}
+	case 12:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		//line hoc.y:35
+		{
+			yyVAL.val = yyDollar[2].val
 		}
 	}
 	goto yystack /* stack new state and value */
