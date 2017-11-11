@@ -8,6 +8,7 @@
     "io"
     "strconv"
     "log"
+    "regexp"
   )
   var mem[26] int
 %}
@@ -67,7 +68,12 @@ func (l *Lexer) Lex(lval *yySymType) int {
 
   _, err := strconv.ParseFloat(string(c), 32)
   if string(c) == "." || err == nil {
-    lval.val = int(c) - '0'
+    re := regexp.MustCompile("[0-9]+")
+    locations := re.FindStringIndex(l.s[l.pos-1:])
+    str := re.FindString(l.s[l.pos-1:])
+    l.pos += locations[1] - 1
+    i, _ := strconv.Atoi(str)
+    lval.val = i
     return NUMBER
   }
   return int(c)
