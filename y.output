@@ -3,270 +3,274 @@ state 0
 	$accept: .list $end 
 	list: .    (1)
 
-	.  reduce 1 (src line 32)
+	.  reduce 1 (src line 33)
 
 	list  goto 1
 
 state 1
 	$accept:  list.$end 
 	list:  list.'\n' 
+	list:  list.asgn '\n' 
 	list:  list.expr '\n' 
 	list:  list.error '\n' 
 
 	$end  accept
-	error  shift 4
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
+	error  shift 5
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
 	'\n'  shift 2
-	'('  shift 5
+	'('  shift 7
 	.  error
 
-	expr  goto 3
+	expr  goto 4
+	asgn  goto 3
 
 state 2
 	list:  list '\n'.    (2)
 
-	.  reduce 2 (src line 33)
+	.  reduce 2 (src line 34)
 
 
+3: shift/reduce conflict (shift 12(0), red'n 18(0)) on '\n'
 state 3
+	list:  list asgn.'\n' 
+	expr:  asgn.    (18)
+
+	'\n'  shift 12
+	.  reduce 18 (src line 63)
+
+
+state 4
 	list:  list expr.'\n' 
 	expr:  expr.'%' expr 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
 
-	'%'  shift 11
-	'+'  shift 12
-	'-'  shift 13
-	'*'  shift 14
-	'/'  shift 15
-	'\n'  shift 10
-	.  error
-
-
-state 4
-	list:  list error.'\n' 
-
-	'\n'  shift 16
+	'%'  shift 14
+	'+'  shift 15
+	'-'  shift 16
+	'*'  shift 17
+	'/'  shift 18
+	'^'  shift 19
+	'\n'  shift 13
 	.  error
 
 
 state 5
-	expr:  '('.expr ')' 
+	list:  list error.'\n' 
 
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
+	'\n'  shift 20
 	.  error
 
-	expr  goto 17
 
 state 6
-	expr:  NUMBER.    (11)
+	asgn:  VAR.'=' expr 
+	expr:  VAR.    (17)
 
-	.  reduce 11 (src line 47)
+	'='  shift 21
+	.  reduce 17 (src line 57)
 
 
 state 7
-	expr:  '-'.expr 
+	expr:  '('.expr ')' 
 
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
-	.  error
-
-	expr  goto 18
-
-state 8
-	expr:  '+'.expr 
-
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
-	.  error
-
-	expr  goto 19
-
-state 9
-	expr:  VAR.    (14)
-	expr:  VAR.'=' expr 
-
-	'='  shift 20
-	.  reduce 14 (src line 50)
-
-
-state 10
-	list:  list expr '\n'.    (3)
-
-	.  reduce 3 (src line 34)
-
-
-state 11
-	expr:  expr '%'.expr 
-
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
-	.  error
-
-	expr  goto 21
-
-state 12
-	expr:  expr '+'.expr 
-
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
 	.  error
 
 	expr  goto 22
+	asgn  goto 23
 
-state 13
-	expr:  expr '-'.expr 
+state 8
+	expr:  NUMBER.    (14)
 
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
-	.  error
+	.  reduce 14 (src line 54)
 
-	expr  goto 23
 
-state 14
-	expr:  expr '*'.expr 
+state 9
+	expr:  '-'.expr 
 
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
 	.  error
 
 	expr  goto 24
+	asgn  goto 23
 
-state 15
-	expr:  expr '/'.expr 
+state 10
+	expr:  '+'.expr 
 
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
 	.  error
 
 	expr  goto 25
+	asgn  goto 23
+
+state 11
+	expr:  BLTIN.'(' expr ')' 
+
+	'('  shift 26
+	.  error
+
+
+state 12
+	list:  list asgn '\n'.    (3)
+
+	.  reduce 3 (src line 35)
+
+
+state 13
+	list:  list expr '\n'.    (4)
+
+	.  reduce 4 (src line 36)
+
+
+state 14
+	expr:  expr '%'.expr 
+
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
+
+	expr  goto 27
+	asgn  goto 23
+
+state 15
+	expr:  expr '+'.expr 
+
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
+
+	expr  goto 28
+	asgn  goto 23
 
 state 16
-	list:  list error '\n'.    (4)
+	expr:  expr '-'.expr 
 
-	.  reduce 4 (src line 35)
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
 
+	expr  goto 29
+	asgn  goto 23
 
 state 17
+	expr:  expr '*'.expr 
+
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
+
+	expr  goto 30
+	asgn  goto 23
+
+state 18
+	expr:  expr '/'.expr 
+
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
+
+	expr  goto 31
+	asgn  goto 23
+
+state 19
+	expr:  expr '^'.expr 
+
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
+
+	expr  goto 32
+	asgn  goto 23
+
+state 20
+	list:  list error '\n'.    (5)
+
+	.  reduce 5 (src line 37)
+
+
+state 21
+	asgn:  VAR '='.expr 
+
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
+
+	expr  goto 33
+	asgn  goto 23
+
+state 22
 	expr:  '(' expr.')' 
 	expr:  expr.'%' expr 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
 
-	'%'  shift 11
-	'+'  shift 12
-	'-'  shift 13
-	'*'  shift 14
-	'/'  shift 15
-	')'  shift 26
+	'%'  shift 14
+	'+'  shift 15
+	'-'  shift 16
+	'*'  shift 17
+	'/'  shift 18
+	'^'  shift 19
+	')'  shift 34
 	.  error
-
-
-state 18
-	expr:  expr.'%' expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-	expr:  '-' expr.    (12)
-
-	.  reduce 12 (src line 48)
-
-
-state 19
-	expr:  expr.'%' expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-	expr:  '+' expr.    (13)
-
-	.  reduce 13 (src line 49)
-
-
-state 20
-	expr:  VAR '='.expr 
-
-	NUMBER  shift 6
-	VAR  shift 9
-	'+'  shift 8
-	'-'  shift 7
-	'('  shift 5
-	.  error
-
-	expr  goto 27
-
-state 21
-	expr:  expr.'%' expr 
-	expr:  expr '%' expr.    (6)
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'+'  shift 12
-	'-'  shift 13
-	'*'  shift 14
-	'/'  shift 15
-	.  reduce 6 (src line 38)
-
-
-state 22
-	expr:  expr.'%' expr 
-	expr:  expr.'+' expr 
-	expr:  expr '+' expr.    (7)
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'*'  shift 14
-	'/'  shift 15
-	.  reduce 7 (src line 39)
 
 
 state 23
-	expr:  expr.'%' expr 
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr '-' expr.    (8)
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
+	expr:  asgn.    (18)
 
-	'*'  shift 14
-	'/'  shift 15
-	.  reduce 8 (src line 40)
+	.  reduce 18 (src line 63)
 
 
 state 24
@@ -274,10 +278,12 @@ state 24
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
-	expr:  expr '*' expr.    (9)
 	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+	expr:  '-' expr.    (15)
 
-	.  reduce 9 (src line 41)
+	'^'  shift 19
+	.  reduce 15 (src line 55)
 
 
 state 25
@@ -286,42 +292,171 @@ state 25
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
-	expr:  expr '/' expr.    (10)
+	expr:  expr.'^' expr 
+	expr:  '+' expr.    (16)
 
-	.  reduce 10 (src line 42)
+	'^'  shift 19
+	.  reduce 16 (src line 56)
 
 
 state 26
-	expr:  '(' expr ')'.    (5)
+	expr:  BLTIN '('.expr ')' 
 
-	.  reduce 5 (src line 37)
+	NUMBER  shift 8
+	VAR  shift 6
+	BLTIN  shift 11
+	'+'  shift 10
+	'-'  shift 9
+	'('  shift 7
+	.  error
 
+	expr  goto 35
+	asgn  goto 23
 
 state 27
+	expr:  expr.'%' expr 
+	expr:  expr '%' expr.    (8)
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+
+	'+'  shift 15
+	'-'  shift 16
+	'*'  shift 17
+	'/'  shift 18
+	'^'  shift 19
+	.  reduce 8 (src line 44)
+
+
+state 28
+	expr:  expr.'%' expr 
+	expr:  expr.'+' expr 
+	expr:  expr '+' expr.    (9)
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+
+	'*'  shift 17
+	'/'  shift 18
+	'^'  shift 19
+	.  reduce 9 (src line 45)
+
+
+state 29
+	expr:  expr.'%' expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr '-' expr.    (10)
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+
+	'*'  shift 17
+	'/'  shift 18
+	'^'  shift 19
+	.  reduce 10 (src line 46)
+
+
+state 30
+	expr:  expr.'%' expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr '*' expr.    (11)
+	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+
+	'^'  shift 19
+	.  reduce 11 (src line 47)
+
+
+state 31
 	expr:  expr.'%' expr 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
-	expr:  VAR '=' expr.    (15)
+	expr:  expr '/' expr.    (12)
+	expr:  expr.'^' expr 
 
-	'%'  shift 11
-	'+'  shift 12
-	'-'  shift 13
-	'*'  shift 14
-	'/'  shift 15
-	.  reduce 15 (src line 51)
+	'^'  shift 19
+	.  reduce 12 (src line 48)
 
 
-16 terminals, 3 nonterminals
-16 grammar rules, 28/8000 states
-0 shift/reduce, 0 reduce/reduce conflicts reported
-52 working sets used
-memory: parser 10/120000
-13 extra closures
-79 shift entries, 1 exceptions
-11 goto entries
-0 entries saved by goto default
-Optimizer space used: output 52/120000
-52 table entries, 4 zero
-maximum spread: 16, maximum offset: 20
+state 32
+	expr:  expr.'%' expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+	expr:  expr '^' expr.    (13)
+
+	'^'  shift 19
+	.  reduce 13 (src line 53)
+
+
+state 33
+	asgn:  VAR '=' expr.    (6)
+	expr:  expr.'%' expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+
+	'%'  shift 14
+	'+'  shift 15
+	'-'  shift 16
+	'*'  shift 17
+	'/'  shift 18
+	'^'  shift 19
+	.  reduce 6 (src line 40)
+
+
+state 34
+	expr:  '(' expr ')'.    (7)
+
+	.  reduce 7 (src line 43)
+
+
+state 35
+	expr:  expr.'%' expr 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.'^' expr 
+	expr:  BLTIN '(' expr.')' 
+
+	'%'  shift 14
+	'+'  shift 15
+	'-'  shift 16
+	'*'  shift 17
+	'/'  shift 18
+	'^'  shift 19
+	')'  shift 36
+	.  error
+
+
+state 36
+	expr:  BLTIN '(' expr ')'.    (19)
+
+	.  reduce 19 (src line 64)
+
+
+19 terminals, 4 nonterminals
+20 grammar rules, 37/8000 states
+1 shift/reduce, 0 reduce/reduce conflicts reported
+53 working sets used
+memory: parser 24/120000
+18 extra closures
+121 shift entries, 1 exceptions
+15 goto entries
+10 entries saved by goto default
+Optimizer space used: output 83/120000
+83 table entries, 14 zero
+maximum spread: 19, maximum offset: 26
