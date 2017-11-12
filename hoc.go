@@ -9,17 +9,19 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"os"
 	"regexp"
 	"strconv"
+	"unicode"
 )
 
-var mem [26]int
+var mem [26]float64
 
-//line hoc.y:16
+//line hoc.y:18
 type yySymType struct {
 	yys   int
-	val   int
+	val   float64
 	index int
 }
 
@@ -52,7 +54,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line hoc.y:53
+//line hoc.y:55
 
 type Lexer struct {
 	s   string
@@ -75,9 +77,14 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		locations := re.FindStringIndex(l.s[l.pos-1:])
 		str := re.FindString(l.s[l.pos-1:])
 		l.pos += locations[1] - 1
-		i, _ := strconv.Atoi(str)
-		lval.val = i
+		f, _ := strconv.ParseFloat(str, 64)
+		lval.val = f
 		return NUMBER
+	}
+
+	if unicode.IsLower(c) {
+		lval.index = int(c - 'a')
+		return VAR
 	}
 	return int(c)
 }
@@ -509,49 +516,49 @@ yydefault:
 
 	case 3:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:32
+		//line hoc.y:34
 		{
-			fmt.Printf("%d\n", yyDollar[2].val)
+			fmt.Printf("%v\n", yyDollar[2].val)
 		}
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:33
+		//line hoc.y:35
 		{
 			fmt.Printf("error occurred")
 		}
 	case 5:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:35
+		//line hoc.y:37
 		{
 			yyVAL.val = yyDollar[2].val
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:36
+		//line hoc.y:38
 		{
-			yyVAL.val = yyDollar[1].val % yyDollar[3].val
+			yyVAL.val = math.Mod(yyDollar[1].val, yyDollar[3].val)
 		}
 	case 7:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:37
+		//line hoc.y:39
 		{
 			yyVAL.val = yyDollar[1].val + yyDollar[3].val
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:38
+		//line hoc.y:40
 		{
 			yyVAL.val = yyDollar[1].val - yyDollar[3].val
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:39
+		//line hoc.y:41
 		{
 			yyVAL.val = yyDollar[1].val * yyDollar[3].val
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:40
+		//line hoc.y:42
 		{
 			if yyDollar[3].val == 0.0 {
 				log.Fatalf("division by zero")
@@ -560,31 +567,31 @@ yydefault:
 		}
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:45
+		//line hoc.y:47
 		{
 			yyVAL.val = yyDollar[1].val
 		}
 	case 12:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:46
+		//line hoc.y:48
 		{
 			yyVAL.val = -yyDollar[2].val
 		}
 	case 13:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:47
+		//line hoc.y:49
 		{
 			yyVAL.val = yyDollar[2].val
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:48
+		//line hoc.y:50
 		{
 			yyVAL.val = mem[yyDollar[1].index]
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:49
+		//line hoc.y:51
 		{
 			yyVAL.val = mem[yyDollar[1].index]
 			mem[yyDollar[1].index] = yyDollar[3].val
