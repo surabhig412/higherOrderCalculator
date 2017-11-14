@@ -3,7 +3,7 @@ state 0
 	$accept: .list $end 
 	list: .    (1)
 
-	.  reduce 1 (src line 33)
+	.  reduce 1 (src line 32)
 
 	list  goto 1
 
@@ -31,7 +31,7 @@ state 1
 state 2
 	list:  list '\n'.    (2)
 
-	.  reduce 2 (src line 34)
+	.  reduce 2 (src line 33)
 
 
 3: shift/reduce conflict (shift 12(0), red'n 18(0)) on '\n'
@@ -40,7 +40,7 @@ state 3
 	expr:  asgn.    (18)
 
 	'\n'  shift 12
-	.  reduce 18 (src line 63)
+	.  reduce 18 (src line 62)
 
 
 state 4
@@ -74,7 +74,7 @@ state 6
 	expr:  VAR.    (17)
 
 	'='  shift 21
-	.  reduce 17 (src line 57)
+	.  reduce 17 (src line 56)
 
 
 state 7
@@ -94,7 +94,7 @@ state 7
 state 8
 	expr:  NUMBER.    (14)
 
-	.  reduce 14 (src line 54)
+	.  reduce 14 (src line 53)
 
 
 state 9
@@ -135,13 +135,13 @@ state 11
 state 12
 	list:  list asgn '\n'.    (3)
 
-	.  reduce 3 (src line 35)
+	.  reduce 3 (src line 34)
 
 
 state 13
 	list:  list expr '\n'.    (4)
 
-	.  reduce 4 (src line 36)
+	.  reduce 4 (src line 35)
 
 
 state 14
@@ -231,7 +231,7 @@ state 19
 state 20
 	list:  list error '\n'.    (5)
 
-	.  reduce 5 (src line 37)
+	.  reduce 5 (src line 36)
 
 
 state 21
@@ -270,7 +270,7 @@ state 22
 state 23
 	expr:  asgn.    (18)
 
-	.  reduce 18 (src line 63)
+	.  reduce 18 (src line 62)
 
 
 state 24
@@ -283,7 +283,7 @@ state 24
 	expr:  '-' expr.    (15)
 
 	'^'  shift 19
-	.  reduce 15 (src line 55)
+	.  reduce 15 (src line 54)
 
 
 state 25
@@ -296,7 +296,7 @@ state 25
 	expr:  '+' expr.    (16)
 
 	'^'  shift 19
-	.  reduce 16 (src line 56)
+	.  reduce 16 (src line 55)
 
 
 state 26
@@ -327,7 +327,7 @@ state 27
 	'*'  shift 17
 	'/'  shift 18
 	'^'  shift 19
-	.  reduce 8 (src line 44)
+	.  reduce 8 (src line 43)
 
 
 state 28
@@ -342,7 +342,7 @@ state 28
 	'*'  shift 17
 	'/'  shift 18
 	'^'  shift 19
-	.  reduce 9 (src line 45)
+	.  reduce 9 (src line 44)
 
 
 state 29
@@ -357,7 +357,7 @@ state 29
 	'*'  shift 17
 	'/'  shift 18
 	'^'  shift 19
-	.  reduce 10 (src line 46)
+	.  reduce 10 (src line 45)
 
 
 state 30
@@ -370,7 +370,7 @@ state 30
 	expr:  expr.'^' expr 
 
 	'^'  shift 19
-	.  reduce 11 (src line 47)
+	.  reduce 11 (src line 46)
 
 
 state 31
@@ -383,7 +383,7 @@ state 31
 	expr:  expr.'^' expr 
 
 	'^'  shift 19
-	.  reduce 12 (src line 48)
+	.  reduce 12 (src line 47)
 
 
 state 32
@@ -396,7 +396,7 @@ state 32
 	expr:  expr '^' expr.    (13)
 
 	'^'  shift 19
-	.  reduce 13 (src line 53)
+	.  reduce 13 (src line 52)
 
 
 state 33
@@ -414,13 +414,13 @@ state 33
 	'*'  shift 17
 	'/'  shift 18
 	'^'  shift 19
-	.  reduce 6 (src line 40)
+	.  reduce 6 (src line 39)
 
 
 state 34
 	expr:  '(' expr ')'.    (7)
 
-	.  reduce 7 (src line 43)
+	.  reduce 7 (src line 42)
 
 
 state 35
@@ -445,7 +445,7 @@ state 35
 state 36
 	expr:  BLTIN '(' expr ')'.    (19)
 
-	.  reduce 19 (src line 64)
+	.  reduce 19 (src line 63)
 
 
 19 terminals, 4 nonterminals

@@ -17,9 +17,7 @@ import (
 	"unicode"
 )
 
-var mem [26]float64
-
-//line hoc.y:18
+//line hoc.y:17
 type yySymType struct {
 	yys int
 	val float64
@@ -60,7 +58,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line hoc.y:66
+//line hoc.y:65
 
 type Lexer struct {
 	s   string
@@ -544,57 +542,57 @@ yydefault:
 
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:36
+		//line hoc.y:35
 		{
 			fmt.Printf("%v\n", yyDollar[2].val)
 		}
 	case 5:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:37
+		//line hoc.y:36
 		{
 			fmt.Printf("error occurred")
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:40
+		//line hoc.y:39
 		{
 			yyDollar[1].sym.Val = yyDollar[3].val
-			yyDollar[1].sym.Type = VAR
 			yyVAL.val = yyDollar[1].sym.Val
+			yyDollar[1].sym.Type = VAR
 		}
 	case 7:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:43
+		//line hoc.y:42
 		{
 			yyVAL.val = yyDollar[2].val
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:44
+		//line hoc.y:43
 		{
 			yyVAL.val = math.Mod(yyDollar[1].val, yyDollar[3].val)
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:45
+		//line hoc.y:44
 		{
 			yyVAL.val = yyDollar[1].val + yyDollar[3].val
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:46
+		//line hoc.y:45
 		{
 			yyVAL.val = yyDollar[1].val - yyDollar[3].val
 		}
 	case 11:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:47
+		//line hoc.y:46
 		{
 			yyVAL.val = yyDollar[1].val * yyDollar[3].val
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:48
+		//line hoc.y:47
 		{
 			if yyDollar[3].val == 0.0 {
 				log.Fatalf("division by zero")
@@ -603,31 +601,31 @@ yydefault:
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:53
+		//line hoc.y:52
 		{
 			yyVAL.val = math.Pow(yyDollar[1].val, yyDollar[3].val)
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:54
+		//line hoc.y:53
 		{
 			yyVAL.val = yyDollar[1].val
 		}
 	case 15:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:55
+		//line hoc.y:54
 		{
 			yyVAL.val = -yyDollar[2].val
 		}
 	case 16:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:56
+		//line hoc.y:55
 		{
 			yyVAL.val = yyDollar[2].val
 		}
 	case 17:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:57
+		//line hoc.y:56
 		{
 			if yyDollar[1].sym.Type == UNDEF {
 				log.Fatalf("undefined variable: ", yyDollar[1].sym.Name)
@@ -636,7 +634,7 @@ yydefault:
 		}
 	case 19:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line hoc.y:64
+		//line hoc.y:63
 		{
 			yyVAL.val = (yyDollar[1].sym.F)(yyDollar[3].val)
 		}

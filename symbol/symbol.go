@@ -1,9 +1,6 @@
 package symbol
 
-import (
-	"math"
-	"strings"
-)
+import "math"
 
 var consts = map[string]float64{
 	"PI":    3.14159265358979323846,
@@ -61,26 +58,24 @@ type Symbol struct {
 	Type int
 	Val  float64
 	F    func(float64) float64
-	Next *Symbol
 }
 
-var symlist *Symbol = nil
+var symMap map[string]Symbol
 
 func Lookup(name string) *Symbol {
-	for sp := symlist; sp != nil; sp = sp.Next {
-		if strings.Compare(sp.Name, name) == 0 {
-			return sp
-		}
+	value, ok := symMap[name]
+	if ok {
+		return &value
 	}
 	return nil
 }
 
 func (symbol *Symbol) Install() {
-	symbol.Next = symlist
-	symlist = symbol
+	symMap[symbol.Name] = *symbol
 }
 
 func Init(_var, bltin int) {
+	symMap = make(map[string]Symbol, 100)
 	for key, value := range consts {
 		s := &Symbol{Name: key, Type: _var, Val: value}
 		s.Install()

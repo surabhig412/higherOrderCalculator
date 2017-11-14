@@ -12,7 +12,6 @@
     "math"
     "github.com/surabhig412/hoc/symbol"
   )
-  var mem[26] float64
 %}
 
 %union{
