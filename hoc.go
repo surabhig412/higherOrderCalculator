@@ -7,10 +7,10 @@ import __yyfmt__ "fmt"
 import (
 	"bufio"
 	"fmt"
+	"github.com/surabhig412/hoc/code"
 	"github.com/surabhig412/hoc/symbol"
 	"io"
 	"log"
-	"math"
 	"os"
 	"regexp"
 	"strconv"
@@ -19,9 +19,9 @@ import (
 
 //line hoc.y:17
 type yySymType struct {
-	yys int
-	val float64
-	sym *symbol.Symbol
+	yys  int
+	inst *code.Inst
+	sym  *symbol.Symbol
 }
 
 const NUMBER = 57346
@@ -29,7 +29,6 @@ const VAR = 57347
 const BLTIN = 57348
 const UNDEF = 57349
 const UNARYMINUS = 57350
-const UNARYPLUS = 57351
 
 var yyToknames = [...]string{
 	"$end",
@@ -46,7 +45,6 @@ var yyToknames = [...]string{
 	"'*'",
 	"'/'",
 	"UNARYMINUS",
-	"UNARYPLUS",
 	"'^'",
 	"'\\n'",
 	"'('",
@@ -58,7 +56,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line hoc.y:65
+//line hoc.y:53
 
 type Lexer struct {
 	s   string
@@ -82,7 +80,8 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		str := re.FindString(l.s[l.pos-1:])
 		l.pos += locations[1] - 1
 		f, _ := strconv.ParseFloat(str, 64)
-		lval.val = f
+		s := &symbol.Symbol{Type: NUMBER, Val: f}
+		lval.sym = s
 		return NUMBER
 	}
 
@@ -110,7 +109,7 @@ func (l *Lexer) Error(s string) {
 }
 
 func main() {
-	symbol.Init(VAR, BLTIN)
+	symbol.Init(VAR, BLTIN, UNDEF)
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		str, err := reader.ReadString('\n')
@@ -120,8 +119,8 @@ func main() {
 			log.Fatal(err)
 		}
 		yyParse(&Lexer{s: str, pos: 0})
+		code.Execute()
 	}
-
 }
 
 //line yacctab:1
@@ -133,71 +132,70 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 83
+const yyLast = 73
 
 var yyAct = [...]int{
 
-	4, 26, 14, 15, 16, 17, 18, 20, 22, 19,
-	24, 25, 36, 12, 19, 27, 28, 29, 30, 31,
-	32, 21, 33, 23, 1, 3, 0, 35, 14, 15,
-	16, 17, 18, 0, 0, 19, 0, 5, 34, 8,
-	6, 11, 8, 6, 11, 10, 9, 0, 10, 9,
-	0, 0, 2, 7, 0, 0, 7, 14, 15, 16,
-	17, 18, 0, 0, 19, 13, 14, 15, 16, 17,
-	18, 0, 0, 19, 15, 16, 17, 18, 17, 18,
-	19, 0, 19,
+	4, 24, 19, 13, 14, 15, 16, 17, 21, 18,
+	23, 11, 34, 18, 25, 26, 27, 28, 29, 30,
+	20, 31, 22, 1, 3, 33, 13, 14, 15, 16,
+	17, 0, 18, 0, 5, 32, 8, 6, 10, 14,
+	15, 16, 17, 9, 18, 0, 0, 0, 2, 7,
+	13, 14, 15, 16, 17, 0, 18, 12, 8, 6,
+	10, 16, 17, 0, 18, 9, 13, 14, 15, 16,
+	17, 7, 18,
 }
 var yyPact = [...]int{
 
-	-1000, 35, -1000, -4, 48, -10, 13, 38, -1000, 38,
-	38, -17, -1000, -1000, 38, 38, 38, 38, 38, 38,
-	-1000, 38, 19, -1000, -2, -2, 38, 64, 66, 66,
-	-2, -2, -2, 57, -1000, -7, -1000,
+	-1000, 32, -1000, -5, 41, -14, 12, 54, -1000, 54,
+	-16, -1000, -1000, 54, 54, 54, 54, 54, 54, -1000,
+	54, 17, -1000, -2, 54, 29, 49, 49, -2, -2,
+	-2, 57, -1000, -6, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 0, 23, 24,
+	0, 0, 22, 23,
 }
 var yyR1 = [...]int{
 
 	0, 3, 3, 3, 3, 3, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1,
 }
 var yyR2 = [...]int{
 
 	0, 0, 2, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 1, 2, 2, 1, 1, 4,
+	3, 3, 3, 3, 1, 2, 1, 1, 4,
 }
 var yyChk = [...]int{
 
-	-1000, -3, 17, -2, -1, 2, 5, 18, 4, 11,
-	10, 6, 17, 17, 9, 10, 11, 12, 13, 16,
-	17, 8, -1, -2, -1, -1, 18, -1, -1, -1,
-	-1, -1, -1, -1, 19, -1, 19,
+	-1000, -3, 16, -2, -1, 2, 5, 17, 4, 11,
+	6, 16, 16, 9, 10, 11, 12, 13, 15, 16,
+	8, -1, -2, -1, 17, -1, -1, -1, -1, -1,
+	-1, -1, 18, -1, 18,
 }
 var yyDef = [...]int{
 
-	1, -2, 2, 18, 0, 0, 17, 0, 14, 0,
-	0, 0, 3, 4, 0, 0, 0, 0, 0, 0,
-	5, 0, 0, 18, 15, 16, 0, 8, 9, 10,
-	11, 12, 13, 6, 7, 0, 19,
+	1, -2, 2, 17, 0, 0, 16, 0, 14, 0,
+	0, 3, 4, 0, 0, 0, 0, 0, 0, 5,
+	0, 0, 17, 15, 0, 8, 9, 10, 11, 12,
+	13, 6, 7, 0, 18,
 }
 var yyTok1 = [...]int{
 
 	1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	17, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	16, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 9, 3, 3,
-	18, 19, 12, 10, 3, 11, 3, 13, 3, 3,
+	17, 18, 12, 10, 3, 11, 3, 13, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 8, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 16,
+	3, 3, 3, 3, 15,
 }
 var yyTok2 = [...]int{
 
-	2, 3, 4, 5, 6, 7, 14, 15,
+	2, 3, 4, 5, 6, 7, 14,
 }
 var yyTok3 = [...]int{
 	0,
@@ -540,103 +538,109 @@ yydefault:
 	// dummy call; replaced with literal code
 	switch yynt {
 
+	case 3:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:32
+		{
+			(code.Inst(code.Print)).Code()
+			code.STOP.Code()
+			return 1
+		}
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:35
+		//line hoc.y:33
 		{
-			fmt.Printf("%v\n", yyDollar[2].val)
+			(code.Inst(code.Print)).Code()
+			code.STOP.Code()
+			return 1
 		}
 	case 5:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:36
+		//line hoc.y:34
 		{
 			fmt.Printf("error occurred")
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:39
+		//line hoc.y:37
 		{
-			yyDollar[1].sym.Val = yyDollar[3].val
-			yyVAL.val = yyDollar[1].sym.Val
-			yyDollar[1].sym.Type = VAR
+			(code.Inst(code.Varpush)).Code()
+			s := yyDollar[1].sym
+			(code.Inst(func() interface{} { return s })).Code()
+			(code.Inst(code.Assign)).Code()
 		}
 	case 7:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:42
+		//line hoc.y:40
 		{
-			yyVAL.val = yyDollar[2].val
+			yyVAL.inst = yyDollar[2].inst
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:43
+		//line hoc.y:41
 		{
-			yyVAL.val = math.Mod(yyDollar[1].val, yyDollar[3].val)
+			(code.Inst(code.Mod)).Code()
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:44
+		//line hoc.y:42
 		{
-			yyVAL.val = yyDollar[1].val + yyDollar[3].val
+			(code.Inst(code.Add)).Code()
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:45
+		//line hoc.y:43
 		{
-			yyVAL.val = yyDollar[1].val - yyDollar[3].val
+			(code.Inst(code.Sub)).Code()
 		}
 	case 11:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:46
+		//line hoc.y:44
 		{
-			yyVAL.val = yyDollar[1].val * yyDollar[3].val
+			(code.Inst(code.Mul)).Code()
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:47
+		//line hoc.y:45
 		{
-			if yyDollar[3].val == 0.0 {
-				log.Fatalf("division by zero")
-			}
-			yyVAL.val = yyDollar[1].val / yyDollar[3].val
+			(code.Inst(code.Div)).Code()
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:52
+		//line hoc.y:46
 		{
-			yyVAL.val = math.Pow(yyDollar[1].val, yyDollar[3].val)
+			(code.Inst(code.Power)).Code()
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:53
+		//line hoc.y:47
 		{
-			yyVAL.val = yyDollar[1].val
+			(code.Inst(code.Constpush)).Code()
+			s := yyDollar[1].sym
+			(code.Inst(func() interface{} { return s })).Code()
 		}
 	case 15:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:54
+		//line hoc.y:48
 		{
-			yyVAL.val = -yyDollar[2].val
+			(code.Inst(code.Negate)).Code()
 		}
 	case 16:
-		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:55
-		{
-			yyVAL.val = yyDollar[2].val
-		}
-	case 17:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:56
+		//line hoc.y:49
 		{
-			if yyDollar[1].sym.Type == UNDEF {
-				log.Fatalf("undefined variable: ", yyDollar[1].sym.Name)
-			}
-			yyVAL.val = yyDollar[1].sym.Val
+			(code.Inst(code.Varpush)).Code()
+			s := yyDollar[1].sym
+			(code.Inst(func() interface{} { return s })).Code()
+			(code.Inst(code.Eval)).Code()
 		}
-	case 19:
+	case 18:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line hoc.y:63
+		//line hoc.y:51
 		{
-			yyVAL.val = (yyDollar[1].sym.F)(yyDollar[3].val)
+			(code.Inst(code.Bltin)).Code()
+			s := yyDollar[1].sym
+			(code.Inst(func() interface{} { return s })).Code()
 		}
 	}
 	goto yystack /* stack new state and value */

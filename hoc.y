@@ -9,58 +9,46 @@
     "strconv"
     "regexp"
     "unicode"
-    "math"
     "github.com/surabhig412/hoc/symbol"
+    "github.com/surabhig412/hoc/code"
   )
 %}
 
 %union{
-	val float64
+	inst *code.Inst
   sym *symbol.Symbol
 }
-%type <val> expr asgn
-%token <val> NUMBER
-%token <sym> VAR BLTIN UNDEF
+%type <inst> expr asgn
+%token <sym> NUMBER VAR BLTIN UNDEF
 %right '='
 %left '%'
 %left '+' '-'
 %left '*' '/'
 %left UNARYMINUS
-%left UNARYPLUS
 %right '^'
 %%
 list:   /* empty */
       | list '\n'
-      | list asgn '\n'
-      | list expr '\n'  {fmt.Printf("%v\n", $2)}
+      | list asgn '\n'  {(code.Inst(code.Print)).Code(); code.STOP.Code(); return 1;}
+      | list expr '\n'  {(code.Inst(code.Print)).Code(); code.STOP.Code(); return 1;}
       | list error '\n' {fmt.Printf("error occurred")}
       ;
 
-asgn: VAR '=' expr {$1.Val = $3; $$ = $1.Val; $1.Type = VAR;}
+asgn: VAR '=' expr {(code.Inst(code.Varpush)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code(); (code.Inst(code.Assign)).Code()}
       ;
 
 expr:   '('expr')'    {$$ = $2}
-      | expr '%' expr {$$ = math.Mod($1, $3)}
-      | expr '+' expr {$$ = $1 + $3}
-      | expr '-' expr {$$ = $1 - $3}
-      | expr '*' expr {$$ = $1 * $3}
-      | expr '/' expr {
-              if($3 == 0.0) {
-                log.Fatalf("division by zero")
-              }
-              $$ = $1 / $3}
-      | expr '^' expr {$$ = math.Pow($1, $3)}
-      | NUMBER        {$$ = $1}
-      | '-' expr %prec UNARYMINUS {$$ = -$2}
-      | '+' expr %prec UNARYPLUS {$$ = $2}
-      | VAR {
-          if $1.Type == UNDEF {
-          log.Fatalf("undefined variable: ", $1.Name)
-          }
-          $$ = $1.Val
-      }
+      | expr '%' expr {(code.Inst(code.Mod)).Code()}
+      | expr '+' expr {(code.Inst(code.Add)).Code()}
+      | expr '-' expr {(code.Inst(code.Sub)).Code()}
+      | expr '*' expr {(code.Inst(code.Mul)).Code()}
+      | expr '/' expr {(code.Inst(code.Div)).Code()}
+      | expr '^' expr {(code.Inst(code.Power)).Code()}
+      | NUMBER        {(code.Inst(code.Constpush)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code()}
+      | '-' expr %prec UNARYMINUS {(code.Inst(code.Negate)).Code()}
+      | VAR {(code.Inst(code.Varpush)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code(); (code.Inst(code.Eval)).Code()}
       | asgn
-      | BLTIN '('expr')' {$$ = (($1.F))($3)}
+      | BLTIN '('expr')' {(code.Inst(code.Bltin)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code()}
       ;
 %%
 
@@ -85,7 +73,8 @@ func (l *Lexer) Lex(lval *yySymType) int {
     str := re.FindString(l.s[l.pos-1:])
     l.pos += locations[1] - 1
     f, _ := strconv.ParseFloat(str, 64)
-    lval.val = f
+    s := &symbol.Symbol{Type: NUMBER, Val: f}
+    lval.sym = s
     return NUMBER
   }
 
@@ -113,7 +102,7 @@ func (l *Lexer) Error(s string) {
 }
 
 func main() {
-  symbol.Init(VAR, BLTIN)
+  symbol.Init(VAR, BLTIN, UNDEF)
   reader := bufio.NewReader(os.Stdin)
   for {
   str, err := reader.ReadString('\n')
@@ -123,6 +112,6 @@ func main() {
 			log.Fatal(err)
 	}
   yyParse(&Lexer{s: str, pos: 0})
+  code.Execute()
   }
-
 }

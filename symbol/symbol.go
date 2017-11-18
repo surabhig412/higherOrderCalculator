@@ -10,6 +10,8 @@ var consts = map[string]float64{
 	"PHI":   1.61803398874989484820,  // golden ratio
 }
 
+var UNDEF, VAR int
+
 func sin(x float64) float64 {
 	return math.Sin(x)
 }
@@ -74,7 +76,9 @@ func (symbol *Symbol) Install() {
 	symMap[symbol.Name] = *symbol
 }
 
-func Init(_var, bltin int) {
+func Init(_var, bltin, undef int) {
+	UNDEF = undef
+	VAR = _var
 	symMap = make(map[string]Symbol, 100)
 	for key, value := range consts {
 		s := &Symbol{Name: key, Type: _var, Val: value}
