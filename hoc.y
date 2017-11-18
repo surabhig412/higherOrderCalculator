@@ -29,26 +29,26 @@
 %%
 list:   /* empty */
       | list '\n'
-      | list asgn '\n'  {(code.Inst(code.Print)).Code(); code.STOP.Code(); return 1;}
-      | list expr '\n'  {(code.Inst(code.Print)).Code(); code.STOP.Code(); return 1;}
+      | list asgn '\n'  {code.Opr(code.Print); code.STOP.Code(); return 1;}
+      | list expr '\n'  {code.Opr(code.Print); code.STOP.Code(); return 1;}
       | list error '\n' {fmt.Printf("error occurred")}
       ;
 
-asgn: VAR '=' expr {(code.Inst(code.Varpush)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code(); (code.Inst(code.Assign)).Code()}
+asgn: VAR '=' expr {code.Opr(code.Varpush); code.Val($1); code.Opr(code.Assign)}
       ;
 
 expr:   '('expr')'    {$$ = $2}
-      | expr '%' expr {(code.Inst(code.Mod)).Code()}
-      | expr '+' expr {(code.Inst(code.Add)).Code()}
-      | expr '-' expr {(code.Inst(code.Sub)).Code()}
-      | expr '*' expr {(code.Inst(code.Mul)).Code()}
-      | expr '/' expr {(code.Inst(code.Div)).Code()}
-      | expr '^' expr {(code.Inst(code.Power)).Code()}
-      | NUMBER        {(code.Inst(code.Constpush)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code()}
-      | '-' expr %prec UNARYMINUS {(code.Inst(code.Negate)).Code()}
-      | VAR {(code.Inst(code.Varpush)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code(); (code.Inst(code.Eval)).Code()}
+      | expr '%' expr {code.Opr(code.Mod)}
+      | expr '+' expr {code.Opr(code.Add)}
+      | expr '-' expr {code.Opr(code.Sub)}
+      | expr '*' expr {code.Opr(code.Mul)}
+      | expr '/' expr {code.Opr(code.Div)}
+      | expr '^' expr {code.Opr(code.Power)}
+      | NUMBER        {code.Opr(code.Constpush); code.Val($1)}
+      | '-' expr %prec UNARYMINUS {code.Opr(code.Negate)}
+      | VAR {code.Opr(code.Varpush); code.Val($1); code.Opr(code.Eval)}
       | asgn
-      | BLTIN '('expr')' {(code.Inst(code.Bltin)).Code(); s := $1; (code.Inst(func()interface{}{return s})).Code()}
+      | BLTIN '('expr')' {code.Opr(code.Bltin); code.Val($1)}
       ;
 %%
 

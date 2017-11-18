@@ -542,7 +542,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:32
 		{
-			(code.Inst(code.Print)).Code()
+			code.Opr(code.Print)
 			code.STOP.Code()
 			return 1
 		}
@@ -550,7 +550,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:33
 		{
-			(code.Inst(code.Print)).Code()
+			code.Opr(code.Print)
 			code.STOP.Code()
 			return 1
 		}
@@ -564,10 +564,9 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:37
 		{
-			(code.Inst(code.Varpush)).Code()
-			s := yyDollar[1].sym
-			(code.Inst(func() interface{} { return s })).Code()
-			(code.Inst(code.Assign)).Code()
+			code.Opr(code.Varpush)
+			code.Val(yyDollar[1].sym)
+			code.Opr(code.Assign)
 		}
 	case 7:
 		yyDollar = yyS[yypt-3 : yypt+1]
@@ -579,68 +578,65 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:41
 		{
-			(code.Inst(code.Mod)).Code()
+			code.Opr(code.Mod)
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:42
 		{
-			(code.Inst(code.Add)).Code()
+			code.Opr(code.Add)
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:43
 		{
-			(code.Inst(code.Sub)).Code()
+			code.Opr(code.Sub)
 		}
 	case 11:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:44
 		{
-			(code.Inst(code.Mul)).Code()
+			code.Opr(code.Mul)
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:45
 		{
-			(code.Inst(code.Div)).Code()
+			code.Opr(code.Div)
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line hoc.y:46
 		{
-			(code.Inst(code.Power)).Code()
+			code.Opr(code.Power)
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line hoc.y:47
 		{
-			(code.Inst(code.Constpush)).Code()
-			s := yyDollar[1].sym
-			(code.Inst(func() interface{} { return s })).Code()
+			code.Opr(code.Constpush)
+			code.Val(yyDollar[1].sym)
 		}
 	case 15:
 		yyDollar = yyS[yypt-2 : yypt+1]
 		//line hoc.y:48
 		{
-			(code.Inst(code.Negate)).Code()
+			code.Opr(code.Negate)
 		}
 	case 16:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line hoc.y:49
 		{
-			(code.Inst(code.Varpush)).Code()
-			s := yyDollar[1].sym
-			(code.Inst(func() interface{} { return s })).Code()
-			(code.Inst(code.Eval)).Code()
+			code.Opr(code.Varpush)
+			code.Val(yyDollar[1].sym)
+			code.Opr(code.Eval)
 		}
 	case 18:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		//line hoc.y:51
 		{
-			(code.Inst(code.Bltin)).Code()
-			s := yyDollar[1].sym
-			(code.Inst(func() interface{} { return s })).Code()
+			code.Opr(code.Bltin)
+			code.Val(yyDollar[1].sym)
 		}
 	}
 	goto yystack /* stack new state and value */
