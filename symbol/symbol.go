@@ -2,6 +2,8 @@ package symbol
 
 import "math"
 
+var UNDEF, VAR, IF, ELSE, WHILE, PRINT int
+
 var consts = map[string]float64{
 	"PI":    3.14159265358979323846,
 	"E":     2.71828182845904523536,
@@ -10,7 +12,12 @@ var consts = map[string]float64{
 	"PHI":   1.61803398874989484820,  // golden ratio
 }
 
-var UNDEF, VAR int
+var keywords = map[string]func() int{
+	"if":    func() int { return IF },
+	"else":  func() int { return ELSE },
+	"while": func() int { return WHILE },
+	"print": func() int { return PRINT },
+}
 
 func sin(x float64) float64 {
 	return math.Sin(x)
@@ -76,16 +83,24 @@ func (symbol *Symbol) Install() {
 	symMap[symbol.Name] = *symbol
 }
 
-func Init(_var, bltin, undef int) {
+func Init(_var, bltin, undef, _if, _else, while, print int) {
 	UNDEF = undef
 	VAR = _var
+	IF = _if
+	ELSE = _else
+	WHILE = while
+	PRINT = print
 	symMap = make(map[string]Symbol, 100)
 	for key, value := range consts {
 		s := &Symbol{Name: key, Type: _var, Val: value}
 		s.Install()
 	}
 	for key, value := range builtins {
-		s := &Symbol{Name: key, Type: bltin, Val: 0.0, F: value}
+		s := &Symbol{Name: key, Type: bltin, F: value}
+		s.Install()
+	}
+	for key, value := range keywords {
+		s := &Symbol{Name: key, Type: value()}
 		s.Install()
 	}
 }

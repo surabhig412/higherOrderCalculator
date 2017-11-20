@@ -28,7 +28,20 @@ const NUMBER = 57346
 const VAR = 57347
 const BLTIN = 57348
 const UNDEF = 57349
-const UNARYMINUS = 57350
+const PRINT = 57350
+const WHILE = 57351
+const IF = 57352
+const ELSE = 57353
+const OR = 57354
+const AND = 57355
+const GT = 57356
+const GE = 57357
+const LT = 57358
+const LE = 57359
+const EQ = 57360
+const NE = 57361
+const UNARYMINUS = 57362
+const NOT = 57363
 
 var yyToknames = [...]string{
 	"$end",
@@ -38,15 +51,30 @@ var yyToknames = [...]string{
 	"VAR",
 	"BLTIN",
 	"UNDEF",
+	"PRINT",
+	"WHILE",
+	"IF",
+	"ELSE",
 	"'='",
+	"OR",
+	"AND",
+	"GT",
+	"GE",
+	"LT",
+	"LE",
+	"EQ",
+	"NE",
 	"'%'",
 	"'+'",
 	"'-'",
 	"'*'",
 	"'/'",
 	"UNARYMINUS",
+	"NOT",
 	"'^'",
 	"'\\n'",
+	"'{'",
+	"'}'",
 	"'('",
 	"')'",
 }
@@ -56,7 +84,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line hoc.y:53
+//line hoc.y:123
 
 type Lexer struct {
 	s   string
@@ -82,6 +110,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		f, _ := strconv.ParseFloat(str, 64)
 		s := &symbol.Symbol{Type: NUMBER, Val: f}
 		lval.sym = s
+		fmt.Println("NUMBER: ", s)
 		return NUMBER
 	}
 
@@ -101,7 +130,35 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		}
 		return s.Type
 	}
+
+	switch string(c) {
+	case ">":
+		return l.follow("=", GE, GT)
+	case "<":
+		return l.follow("=", LE, LT)
+	case "=":
+		return l.follow("=", EQ, int(c))
+	case "!":
+		return l.follow("=", NE, NOT)
+	case "|":
+		return l.follow("|", OR, int(c))
+	case "&":
+		return l.follow("&", AND, int(c))
+	case "\n":
+		return int(c)
+	default:
+		return int(c)
+	}
 	return int(c)
+}
+
+func (l *Lexer) follow(expect string, ifyes, ifno int) int {
+	nextChar := rune(l.s[l.pos])
+	if string(nextChar) == expect {
+		l.pos += 1
+		return ifyes
+	}
+	return ifno
 }
 
 func (l *Lexer) Error(s string) {
@@ -109,7 +166,7 @@ func (l *Lexer) Error(s string) {
 }
 
 func main() {
-	symbol.Init(VAR, BLTIN, UNDEF)
+	symbol.Init(VAR, BLTIN, UNDEF, IF, ELSE, WHILE, PRINT)
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		str, err := reader.ReadString('\n')
@@ -132,70 +189,112 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 73
+const yyLast = 262
 
 var yyAct = [...]int{
 
-	4, 24, 19, 13, 14, 15, 16, 17, 21, 18,
-	23, 11, 34, 18, 25, 26, 27, 28, 29, 30,
-	20, 31, 22, 1, 3, 33, 13, 14, 15, 16,
-	17, 0, 18, 0, 5, 32, 8, 6, 10, 14,
-	15, 16, 17, 9, 18, 0, 0, 0, 2, 7,
-	13, 14, 15, 16, 17, 0, 18, 12, 8, 6,
-	10, 16, 17, 0, 18, 9, 13, 14, 15, 16,
-	17, 7, 18,
+	72, 4, 46, 41, 36, 64, 20, 5, 22, 23,
+	24, 25, 26, 19, 38, 27, 27, 37, 44, 77,
+	45, 76, 47, 25, 26, 1, 10, 27, 48, 49,
+	50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+	60, 61, 63, 62, 66, 69, 39, 65, 3, 9,
+	43, 0, 71, 35, 34, 28, 29, 30, 31, 32,
+	33, 22, 23, 24, 25, 26, 40, 74, 27, 23,
+	24, 25, 26, 75, 0, 27, 0, 42, 78, 79,
+	35, 34, 28, 29, 30, 31, 32, 33, 22, 23,
+	24, 25, 26, 0, 0, 27, 0, 0, 0, 0,
+	73, 35, 34, 28, 29, 30, 31, 32, 33, 22,
+	23, 24, 25, 26, 0, 0, 27, 0, 13, 7,
+	15, 70, 8, 17, 18, 34, 28, 29, 30, 31,
+	32, 33, 22, 23, 24, 25, 26, 14, 0, 27,
+	0, 16, 0, 68, 11, 67, 12, 35, 34, 28,
+	29, 30, 31, 32, 33, 22, 23, 24, 25, 26,
+	0, 0, 27, 21, 6, 0, 13, 7, 15, 0,
+	8, 17, 18, 0, 13, 7, 15, 0, 8, 17,
+	18, 0, 0, 0, 0, 14, 0, 0, 0, 16,
+	0, 2, 11, 14, 12, 0, 0, 16, 0, 0,
+	11, 0, 12, 35, 34, 28, 29, 30, 31, 32,
+	33, 22, 23, 24, 25, 26, 0, 0, 27, 28,
+	29, 30, 31, 32, 33, 22, 23, 24, 25, 26,
+	0, 0, 27, 13, 7, 15, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 14, 0, 0, 0, 16, 0, 0, 0,
+	0, 12,
 }
 var yyPact = [...]int{
 
-	-1000, 32, -1000, -5, 41, -14, 12, 54, -1000, 54,
-	-16, -1000, -1000, 54, 54, 54, 54, 54, 54, -1000,
-	54, 17, -1000, -2, 54, 29, 49, 49, -2, -2,
-	-2, 57, -1000, -6, -1000,
+	-1000, 162, -1000, -16, -23, 134, -25, 5, 229, -29,
+	-29, -1000, 229, -1000, 229, -30, 229, -1000, -1000, -1000,
+	-1000, -1000, 229, 229, 229, 229, 229, 229, 229, 229,
+	229, 229, 229, 229, 229, 229, -1000, 229, 190, -1000,
+	170, 229, 170, 114, 88, -12, 229, -12, 47, -1,
+	-1, -12, -12, -12, -13, -13, -13, -13, -13, -13,
+	204, 111, 190, -1000, 190, 67, -1000, -1000, -1000, -1000,
+	-1000, 40, -1000, -1000, 8, -1000, 170, -1000, -1000, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 0, 22, 23,
+	0, 5, 46, 1, 50, 66, 49, 26, 0, 25,
+	21,
 }
 var yyR1 = [...]int{
 
-	0, 3, 3, 3, 3, 3, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1,
+	0, 9, 9, 9, 9, 9, 9, 2, 3, 3,
+	3, 3, 3, 3, 5, 6, 10, 7, 8, 4,
+	4, 4, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1,
 }
 var yyR2 = [...]int{
 
-	0, 0, 2, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 1, 2, 1, 1, 4,
+	0, 0, 2, 3, 3, 3, 3, 3, 1, 2,
+	4, 4, 7, 3, 3, 1, 1, 1, 0, 0,
+	2, 2, 3, 3, 3, 3, 3, 3, 3, 1,
+	2, 1, 1, 4, 3, 3, 3, 3, 3, 3,
+	3, 3, 2,
 }
 var yyChk = [...]int{
 
-	-1000, -3, 16, -2, -1, 2, 5, 17, 4, 11,
-	6, 16, 16, 9, 10, 11, 12, 13, 15, 16,
-	8, -1, -2, -1, 17, -1, -1, -1, -1, -1,
-	-1, -1, 18, -1, 18,
+	-1000, -9, 29, -2, -3, -1, 2, 5, 8, -6,
+	-7, 30, 32, 4, 23, 6, 27, 9, 10, 29,
+	29, 29, 21, 22, 23, 24, 25, 28, 15, 16,
+	17, 18, 19, 20, 14, 13, 29, 12, -1, -2,
+	-5, 32, -5, -4, -1, -1, 32, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -3, -1, -1, -3, 31, 29, -3,
+	33, -1, -8, 33, -8, 33, -10, 11, -3, -8,
 }
 var yyDef = [...]int{
 
-	1, -2, 2, 17, 0, 0, 16, 0, 14, 0,
-	0, 3, 4, 0, 0, 0, 0, 0, 0, 5,
-	0, 0, 17, 15, 0, 8, 9, 10, 11, 12,
-	13, 6, 7, 0, 18,
+	1, -2, 2, 32, 0, 0, 0, 31, 0, 0,
+	0, 19, 0, 29, 0, 0, 0, 15, 17, 3,
+	4, 5, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 6, 0, 9, 32,
+	0, 0, 0, 0, 0, 30, 0, 42, 23, 24,
+	25, 26, 27, 28, 34, 35, 36, 37, 38, 39,
+	40, 41, 7, 18, 8, 0, 18, 13, 20, 21,
+	22, 0, 10, 14, 11, 33, 0, 16, 18, 12,
 }
 var yyTok1 = [...]int{
 
 	1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	16, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	29, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 9, 3, 3,
-	17, 18, 12, 10, 3, 11, 3, 13, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 21, 3, 3,
+	32, 33, 24, 22, 3, 23, 3, 25, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 8, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 12, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 15,
+	3, 3, 3, 3, 28, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 30, 3, 31,
 }
 var yyTok2 = [...]int{
 
-	2, 3, 4, 5, 6, 7, 14,
+	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+	13, 14, 15, 16, 17, 18, 19, 20, 26, 27,
 }
 var yyTok3 = [...]int{
 	0,
@@ -540,7 +639,7 @@ yydefault:
 
 	case 3:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:32
+		//line hoc.y:35
 		{
 			code.Opr(code.Print)
 			code.STOP.Code()
@@ -548,95 +647,269 @@ yydefault:
 		}
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:33
+		//line hoc.y:36
 		{
-			code.Opr(code.Print)
 			code.STOP.Code()
 			return 1
 		}
 	case 5:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:34
+		//line hoc.y:37
 		{
-			fmt.Printf("error occurred")
+			code.Opr(code.Print)
+			code.STOP.Code()
+			return 1
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:37
+		//line hoc.y:38
 		{
+			fmt.Println("error occurred")
+		}
+	case 7:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:41
+		{
+			yyVAL.inst = yyDollar[3].inst
 			code.Opr(code.Varpush)
 			code.Val(yyDollar[1].sym)
 			code.Opr(code.Assign)
 		}
-	case 7:
-		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:40
-		{
-			yyVAL.inst = yyDollar[2].inst
-		}
 	case 8:
-		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:41
-		{
-			code.Opr(code.Mod)
-		}
-	case 9:
-		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:42
-		{
-			code.Opr(code.Add)
-		}
-	case 10:
-		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:43
-		{
-			code.Opr(code.Sub)
-		}
-	case 11:
-		yyDollar = yyS[yypt-3 : yypt+1]
+		yyDollar = yyS[yypt-1 : yypt+1]
 		//line hoc.y:44
 		{
-			code.Opr(code.Mul)
+			fmt.Println("while expr called")
+			code.Opr(code.Print)
 		}
-	case 12:
-		yyDollar = yyS[yypt-3 : yypt+1]
+	case 9:
+		yyDollar = yyS[yypt-2 : yypt+1]
 		//line hoc.y:45
 		{
-			code.Opr(code.Div)
+			code.Opr(code.PrExpr)
+			yyVAL.inst = yyDollar[2].inst
+		}
+	case 10:
+		yyDollar = yyS[yypt-4 : yypt+1]
+		//line hoc.y:46
+		{
+			fmt.Println("while stmt called, $2: ", yyDollar[2].inst, " $3: ", yyDollar[3].inst, " $4: ", yyDollar[4].inst)
+			code.WhileBodyCounter = len(code.Prog)
+			(yyDollar[3].inst).Code()
+			code.WhileNextCounter = len(code.Prog)
+			if yyDollar[4].inst == nil {
+				code.STOP.Code()
+			} else {
+				(yyDollar[4].inst).Code()
+			}
+		}
+	case 11:
+		yyDollar = yyS[yypt-4 : yypt+1]
+		//line hoc.y:57
+		{
+			fmt.Println("if stmt called, $2: ", yyDollar[2].inst, " $3: ", yyDollar[3].inst, " $4: ", yyDollar[4].inst)
+			(yyDollar[3].inst).Code()
+			code.IfNextCounter = len(code.Prog)
+			if yyDollar[4].inst == nil {
+				code.STOP.Code()
+			} else {
+				(yyDollar[4].inst).Code()
+			}
+		}
+	case 12:
+		yyDollar = yyS[yypt-7 : yypt+1]
+		//line hoc.y:67
+		{
+			fmt.Println("if else stmt called, $2: ", yyDollar[2].inst, " $3: ", yyDollar[3].inst, " $4: ", yyDollar[4].inst, " $6: ", yyDollar[6].inst, " $7: ", yyDollar[7].inst)
+			(yyDollar[3].inst).Code()
+
+			(yyDollar[6].inst).Code()
+			code.IfNextCounter = len(code.Prog)
+			if yyDollar[7].inst == nil {
+				code.STOP.Code()
+			} else {
+				(yyDollar[7].inst).Code()
+			}
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:46
+		//line hoc.y:79
 		{
-			code.Opr(code.Power)
+			yyVAL.inst = yyDollar[2].inst
 		}
 	case 14:
-		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:47
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:81
 		{
-			code.Opr(code.Constpush)
-			code.Val(yyDollar[1].sym)
+			fmt.Println("while cond called")
+			code.STOP.Code()
+			yyVAL.inst = yyDollar[2].inst
+			code.IfBodyCounter = len(code.Prog)
 		}
 	case 15:
-		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:48
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line hoc.y:84
 		{
-			code.Opr(code.Negate)
+			fmt.Println("while called")
+			yyVAL.inst = code.Opr(code.Whilecode)
+			code.STOP.Code()
+			code.STOP.Code()
+			code.CondCounter = len(code.Prog)
 		}
 	case 16:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:49
+		//line hoc.y:87
 		{
-			code.Opr(code.Varpush)
+			fmt.Println("else called")
+			code.IfElseCounter = len(code.Prog)
+		}
+	case 17:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line hoc.y:90
+		{
+			yyVAL.inst = code.Opr(code.Ifcode)
+			code.STOP.Code()
+			code.STOP.Code()
+			code.STOP.Code()
+			code.CondCounter = len(code.Prog)
+		}
+	case 18:
+		yyDollar = yyS[yypt-0 : yypt+1]
+		//line hoc.y:93
+		{
+			code.STOP.Code()
+		}
+	case 19:
+		yyDollar = yyS[yypt-0 : yypt+1]
+		//line hoc.y:96
+		{
+		}
+	case 22:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:101
+		{
+			yyVAL.inst = yyDollar[2].inst
+		}
+	case 23:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:102
+		{
+			code.Opr(code.Mod)
+		}
+	case 24:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:103
+		{
+			code.Opr(code.Add)
+		}
+	case 25:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:104
+		{
+			code.Opr(code.Sub)
+		}
+	case 26:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:105
+		{
+			code.Opr(code.Mul)
+		}
+	case 27:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:106
+		{
+			code.Opr(code.Div)
+		}
+	case 28:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:107
+		{
+			code.Opr(code.Power)
+		}
+	case 29:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line hoc.y:108
+		{
+			yyVAL.inst = code.Opr(code.Constpush)
+			code.Val(yyDollar[1].sym)
+		}
+	case 30:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		//line hoc.y:109
+		{
+			yyVAL.inst = yyDollar[2].inst
+			code.Opr(code.Negate)
+		}
+	case 31:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line hoc.y:110
+		{
+			yyVAL.inst = code.Opr(code.Varpush)
 			code.Val(yyDollar[1].sym)
 			code.Opr(code.Eval)
 		}
-	case 18:
+	case 33:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line hoc.y:51
+		//line hoc.y:112
 		{
+			yyVAL.inst = yyDollar[3].inst
 			code.Opr(code.Bltin)
 			code.Val(yyDollar[1].sym)
+		}
+	case 34:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:113
+		{
+			code.Opr(code.Gt)
+		}
+	case 35:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:114
+		{
+			code.Opr(code.Ge)
+		}
+	case 36:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:115
+		{
+			code.Opr(code.Lt)
+		}
+	case 37:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:116
+		{
+			code.Opr(code.Le)
+		}
+	case 38:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:117
+		{
+			code.Opr(code.Eq)
+		}
+	case 39:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:118
+		{
+			code.Opr(code.Ne)
+		}
+	case 40:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:119
+		{
+			code.Opr(code.And)
+		}
+	case 41:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line hoc.y:120
+		{
+			code.Opr(code.Or)
+		}
+	case 42:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		//line hoc.y:121
+		{
+			yyVAL.inst = yyDollar[2].inst
+			code.Opr(code.Not)
 		}
 	}
 	goto yystack /* stack new state and value */
