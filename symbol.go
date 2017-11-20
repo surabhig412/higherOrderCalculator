@@ -50,14 +50,14 @@ func fabs(x float64) float64 {
 }
 
 var builtins = map[string](func(float64) float64){
-	"sin":   sin,
-	"cos":   cos,
-	"atan":  atan,
-	"log":   elog,
-	"log10": log10,
-	"exp":   exp,
-	"sqrt":  sqrt,
-	"abs":   fabs,
+	"sin":    sin,
+	"cos":    cos,
+	"atan":   atan,
+	"log":    elog,
+	"logten": log10,
+	"exp":    exp,
+	"sqrt":   sqrt,
+	"abs":    fabs,
 }
 
 type Symbol struct {

@@ -83,6 +83,7 @@ const yyErrCode = 2
 const yyInitialStackSize = 16
 
 //line hoc.y:121
+
 type Lexer struct {
 	s   string
 	pos int
