@@ -1,11 +1,9 @@
-package code
-
-import "github.com/surabhig412/hoc/symbol"
+package main
 
 func Opr(f func() interface{}) *Inst {
 	return (Inst(f)).Code()
 }
 
-func Val(s *symbol.Symbol) {
+func Val(s *Symbol) {
 	(Inst(func() interface{} { return s })).Code()
 }

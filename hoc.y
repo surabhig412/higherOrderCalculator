@@ -9,14 +9,12 @@
     "strconv"
     "regexp"
     "unicode"
-    "github.com/surabhig412/hoc/symbol"
-    "github.com/surabhig412/hoc/code"
   )
 %}
 
 %union{
-	inst *code.Inst
-  sym *symbol.Symbol
+	inst *Inst
+  sym *Symbol
 }
 %type <inst> expr asgn stmt stmtlist cond while if end
 %token <sym> NUMBER VAR BLTIN UNDEF PRINT WHILE IF ELSE
@@ -32,24 +30,24 @@
 %%
 list:   /* empty */
       | list '\n'
-      | list asgn '\n'  {code.Opr(code.Print); code.STOP.Code(); return 1;}
-      | list stmt '\n'  {code.STOP.Code(); return 1;}
-      | list expr '\n'  {code.Opr(code.Print); code.STOP.Code(); return 1;}
+      | list asgn '\n'  {Opr(Print); STOP.Code(); return 1;}
+      | list stmt '\n'  {STOP.Code(); return 1;}
+      | list expr '\n'  {Opr(Print); STOP.Code(); return 1;}
       | list error '\n' {fmt.Println("error occurred")}
       ;
 
-asgn: VAR '=' expr {$$ = $3; code.Opr(code.Varpush); code.Val($1); code.Opr(code.Assign)}
+asgn: VAR '=' expr {$$ = $3; Opr(Varpush); Val($1); Opr(Assign)}
       ;
 
-stmt:   expr          {fmt.Println("while expr called"); code.Opr(code.Print)}
-      | PRINT expr   {code.Opr(code.PrExpr); $$=$2;}
+stmt:   expr          {fmt.Println("while expr called"); Opr(Print)}
+      | PRINT expr   {Opr(PrExpr); $$=$2;}
       | while cond stmt end {
           fmt.Println("while stmt called, $2: ", $2, " $3: ", $3, " $4: ", $4);
-          code.WhileBodyCounter = len(code.Prog)
+          WhileBodyCounter = len(Prog)
           ($3).Code()
-          code.WhileNextCounter = len(code.Prog)
+          WhileNextCounter = len(Prog)
           if $4 == nil {
-            code.STOP.Code()
+            STOP.Code()
           } else {
             ($4).Code()
           }
@@ -57,9 +55,9 @@ stmt:   expr          {fmt.Println("while expr called"); code.Opr(code.Print)}
       | if cond stmt end {
           fmt.Println("if stmt called, $2: ", $2, " $3: ", $3, " $4: ", $4);
           ($3).Code()
-          code.IfNextCounter = len(code.Prog)
+          IfNextCounter = len(Prog)
           if $4 == nil {
-            code.STOP.Code()
+            STOP.Code()
           } else {
             ($4).Code()
           }
@@ -69,56 +67,56 @@ stmt:   expr          {fmt.Println("while expr called"); code.Opr(code.Print)}
           ($3).Code()
 
           ($6).Code()
-          code.IfNextCounter = len(code.Prog)
+          IfNextCounter = len(Prog)
           if $7 == nil {
-            code.STOP.Code()
+            STOP.Code()
           } else {
             ($7).Code()
           }
       }
       | '{'stmtlist'}'    {$$ = $2}
       ;
-cond:   '('expr')'    {fmt.Println("while cond called"); code.STOP.Code(); $$ = $2; code.IfBodyCounter = len(code.Prog)}
+cond:   '('expr')'    {fmt.Println("while cond called"); STOP.Code(); $$ = $2; IfBodyCounter = len(Prog)}
       ;
 
-while:  WHILE         {fmt.Println("while called"); $$=code.Opr(code.Whilecode); code.STOP.Code(); code.STOP.Code(); code.CondCounter = len(code.Prog);}
+while:  WHILE         {fmt.Println("while called"); $$=Opr(Whilecode); STOP.Code(); STOP.Code(); CondCounter = len(Prog);}
       ;
 
-else:   ELSE          {fmt.Println("else called"); code.IfElseCounter = len(code.Prog)}
+else:   ELSE          {fmt.Println("else called"); IfElseCounter = len(Prog)}
       ;
 
-if:     IF            {$$=code.Opr(code.Ifcode); code.STOP.Code(); code.STOP.Code(); code.STOP.Code(); code.CondCounter = len(code.Prog);}
+if:     IF            {$$=Opr(Ifcode); STOP.Code(); STOP.Code(); STOP.Code(); CondCounter = len(Prog);}
       ;
 
-end:    /* empty */   {code.STOP.Code()} //$$ = len(code.Prog)
+end:    /* empty */   {STOP.Code()} //$$ = len(Prog)
       ;
 
-stmtlist: /* empty */  {}   //{$$ = len(code.Prog)}
+stmtlist: /* empty */  {}   //{$$ = len(Prog)}
         | stmtlist '\n'
         | stmtlist stmt
         ;
 
 expr:   '('expr')'    {$$ = $2}
-      | expr '%' expr {code.Opr(code.Mod)}
-      | expr '+' expr {code.Opr(code.Add)}
-      | expr '-' expr {code.Opr(code.Sub)}
-      | expr '*' expr {code.Opr(code.Mul)}
-      | expr '/' expr {code.Opr(code.Div)}
-      | expr '^' expr {code.Opr(code.Power)}
-      | NUMBER        {$$=code.Opr(code.Constpush); code.Val($1)}
-      | '-' expr %prec UNARYMINUS {$$=$2; code.Opr(code.Negate)}
-      | VAR {$$=code.Opr(code.Varpush); code.Val($1); code.Opr(code.Eval)}
+      | expr '%' expr {Opr(Mod)}
+      | expr '+' expr {Opr(Add)}
+      | expr '-' expr {Opr(Sub)}
+      | expr '*' expr {Opr(Mul)}
+      | expr '/' expr {Opr(Div)}
+      | expr '^' expr {Opr(Power)}
+      | NUMBER        {$$=Opr(Constpush); Val($1)}
+      | '-' expr %prec UNARYMINUS {$$=$2; Opr(Negate)}
+      | VAR {$$=Opr(Varpush); Val($1); Opr(Eval)}
       | asgn
-      | BLTIN '('expr')' {$$=$3; code.Opr(code.Bltin); code.Val($1)}
-      | expr GT expr   {code.Opr(code.Gt)}
-      | expr GE expr   {code.Opr(code.Ge)}
-      | expr LT expr   {code.Opr(code.Lt)}
-      | expr LE expr   {code.Opr(code.Le)}
-      | expr EQ expr   {code.Opr(code.Eq)}
-      | expr NE expr   {code.Opr(code.Ne)}
-      | expr AND expr  {code.Opr(code.And)}
-      | expr OR expr   {code.Opr(code.Or)}
-      | NOT expr       {$$=$2; code.Opr(code.Not)}
+      | BLTIN '('expr')' {$$=$3; Opr(Bltin); Val($1)}
+      | expr GT expr   {Opr(Gt)}
+      | expr GE expr   {Opr(Ge)}
+      | expr LT expr   {Opr(Lt)}
+      | expr LE expr   {Opr(Le)}
+      | expr EQ expr   {Opr(Eq)}
+      | expr NE expr   {Opr(Ne)}
+      | expr AND expr  {Opr(And)}
+      | expr OR expr   {Opr(Or)}
+      | NOT expr       {$$=$2; Opr(Not)}
       ;
 %%
 
@@ -143,7 +141,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
     str := re.FindString(l.s[l.pos-1:])
     l.pos += locations[1] - 1
     f, _ := strconv.ParseFloat(str, 64)
-    s := &symbol.Symbol{Type: NUMBER, Val: f}
+    s := &Symbol{Type: NUMBER, Val: f}
     lval.sym = s
     fmt.Println("NUMBER: ", s)
     return NUMBER
@@ -155,9 +153,9 @@ func (l *Lexer) Lex(lval *yySymType) int {
       name += string(l.s[l.pos])
       l.pos += 1
     }
-    s := symbol.Lookup(name)
+    s := Lookup(name)
     if s == nil {
-      s = &symbol.Symbol{Name: name, Type: UNDEF, Val: 0.0}
+      s = &Symbol{Name: name, Type: UNDEF, Val: 0.0}
     }
     lval.sym = s
     if s.Type == UNDEF {
@@ -193,7 +191,7 @@ func (l *Lexer) Error(s string) {
 }
 
 func main() {
-  symbol.Init(VAR, BLTIN, UNDEF, IF, ELSE, WHILE, PRINT)
+  Init()
   reader := bufio.NewReader(os.Stdin)
   for {
   str, err := reader.ReadString('\n')
@@ -203,6 +201,6 @@ func main() {
 			log.Fatal(err)
 	}
   yyParse(&Lexer{s: str, pos: 0})
-  code.Execute()
+  Execute()
   }
 }

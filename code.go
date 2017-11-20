@@ -1,16 +1,14 @@
-package code
+package main
 
 import (
 	"fmt"
 	"log"
 	"math"
-
-	"github.com/surabhig412/hoc/symbol"
 )
 
 type Datum struct {
 	Val float64
-	Sym symbol.Symbol
+	Sym Symbol
 }
 
 type Inst func() interface{}
@@ -68,7 +66,7 @@ func Constpush() interface{} {
 	pCounter++
 	pc = Prog[pCounter]
 	fmt.Println("constpush: ", pc, pc())
-	d := &Datum{Sym: *pc().(*symbol.Symbol)}
+	d := &Datum{Sym: *pc().(*Symbol)}
 	d.Val = d.Sym.Val
 	d.Push()
 	return nil
@@ -77,7 +75,7 @@ func Constpush() interface{} {
 func Varpush() interface{} {
 	pCounter++
 	pc = Prog[pCounter]
-	d := &Datum{Sym: *pc().(*symbol.Symbol)}
+	d := &Datum{Sym: *pc().(*Symbol)}
 	d.Push()
 	return nil
 }
@@ -139,7 +137,7 @@ func Negate() interface{} {
 
 func Eval() interface{} {
 	d := Pop().(Datum)
-	if d.Sym.Type == symbol.UNDEF {
+	if d.Sym.Type == UNDEF {
 		log.Fatalf("undefined variable ", d.Sym.Name)
 	}
 	d.Val = d.Sym.Val
@@ -150,7 +148,7 @@ func Eval() interface{} {
 func Assign() interface{} {
 	d1 := Pop().(Datum)
 	d2 := Pop().(Datum)
-	if d1.Sym.Type != symbol.VAR && d1.Sym.Type != symbol.UNDEF {
+	if d1.Sym.Type != VAR && d1.Sym.Type != UNDEF {
 		log.Fatalf("assignment to non-variable ", d1.Sym.Name)
 	}
 	// d1.Sym.Val = d2.Val
@@ -169,7 +167,7 @@ func Bltin() interface{} {
 	d := Pop().(Datum)
 	pCounter++
 	pc = Prog[pCounter]
-	d.Val = (*pc().(*symbol.Symbol)).F(d.Val)
+	d.Val = (*pc().(*Symbol)).F(d.Val)
 	d.Push()
 	return nil
 }

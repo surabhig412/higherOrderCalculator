@@ -1,8 +1,6 @@
-package symbol
+package main
 
 import "math"
-
-var UNDEF, VAR, IF, ELSE, WHILE, PRINT int
 
 var consts = map[string]float64{
 	"PI":    3.14159265358979323846,
@@ -31,7 +29,7 @@ func atan(x float64) float64 {
 	return math.Atan(x)
 }
 
-func log(x float64) float64 {
+func elog(x float64) float64 {
 	return math.Log(x)
 }
 
@@ -55,7 +53,7 @@ var builtins = map[string](func(float64) float64){
 	"sin":   sin,
 	"cos":   cos,
 	"atan":  atan,
-	"log":   log,
+	"log":   elog,
 	"log10": log10,
 	"exp":   exp,
 	"sqrt":  sqrt,
@@ -83,20 +81,14 @@ func (symbol *Symbol) Install() {
 	symMap[symbol.Name] = *symbol
 }
 
-func Init(_var, bltin, undef, _if, _else, while, print int) {
-	UNDEF = undef
-	VAR = _var
-	IF = _if
-	ELSE = _else
-	WHILE = while
-	PRINT = print
+func Init() {
 	symMap = make(map[string]Symbol, 100)
 	for key, value := range consts {
-		s := &Symbol{Name: key, Type: _var, Val: value}
+		s := &Symbol{Name: key, Type: VAR, Val: value}
 		s.Install()
 	}
 	for key, value := range builtins {
-		s := &Symbol{Name: key, Type: bltin, F: value}
+		s := &Symbol{Name: key, Type: BLTIN, F: value}
 		s.Install()
 	}
 	for key, value := range keywords {
