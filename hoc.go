@@ -82,7 +82,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line hoc.y:121
+//line hoc.y:118
 
 type Lexer struct {
 	s   string
@@ -108,7 +108,6 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		f, _ := strconv.ParseFloat(str, 64)
 		s := &Symbol{Type: NUMBER, Val: f}
 		lval.sym = s
-		fmt.Println("NUMBER: ", s)
 		return NUMBER
 	}
 
@@ -677,8 +676,7 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line hoc.y:42
 		{
-			fmt.Println("while expr called")
-			Opr(Print)
+			Opr(Pop)
 		}
 	case 9:
 		yyDollar = yyS[yypt-2 : yypt+1]
@@ -691,7 +689,6 @@ yydefault:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		//line hoc.y:44
 		{
-			fmt.Println("while stmt called, $2: ", yyDollar[2].inst, " $3: ", yyDollar[3].inst, " $4: ", yyDollar[4].inst)
 			WhileBodyCounter = len(Prog)
 			(yyDollar[3].inst).Code()
 			WhileNextCounter = len(Prog)
@@ -703,9 +700,8 @@ yydefault:
 		}
 	case 11:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line hoc.y:55
+		//line hoc.y:54
 		{
-			fmt.Println("if stmt called, $2: ", yyDollar[2].inst, " $3: ", yyDollar[3].inst, " $4: ", yyDollar[4].inst)
 			(yyDollar[3].inst).Code()
 			IfNextCounter = len(Prog)
 			if yyDollar[4].inst == nil {
@@ -716,9 +712,8 @@ yydefault:
 		}
 	case 12:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line hoc.y:65
+		//line hoc.y:63
 		{
-			fmt.Println("if else stmt called, $2: ", yyDollar[2].inst, " $3: ", yyDollar[3].inst, " $4: ", yyDollar[4].inst, " $6: ", yyDollar[6].inst, " $7: ", yyDollar[7].inst)
 			(yyDollar[3].inst).Code()
 
 			(yyDollar[6].inst).Code()
@@ -731,24 +726,22 @@ yydefault:
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:77
+		//line hoc.y:74
 		{
 			yyVAL.inst = yyDollar[2].inst
 		}
 	case 14:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:79
+		//line hoc.y:76
 		{
-			fmt.Println("while cond called")
 			STOP.Code()
 			yyVAL.inst = yyDollar[2].inst
 			IfBodyCounter = len(Prog)
 		}
 	case 15:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:82
+		//line hoc.y:79
 		{
-			fmt.Println("while called")
 			yyVAL.inst = Opr(Whilecode)
 			STOP.Code()
 			STOP.Code()
@@ -756,14 +749,13 @@ yydefault:
 		}
 	case 16:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:85
+		//line hoc.y:82
 		{
-			fmt.Println("else called")
 			IfElseCounter = len(Prog)
 		}
 	case 17:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:88
+		//line hoc.y:85
 		{
 			yyVAL.inst = Opr(Ifcode)
 			STOP.Code()
@@ -773,74 +765,74 @@ yydefault:
 		}
 	case 18:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line hoc.y:91
+		//line hoc.y:88
 		{
 			STOP.Code()
 		}
 	case 19:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line hoc.y:94
+		//line hoc.y:91
 		{
 		}
 	case 22:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:99
+		//line hoc.y:96
 		{
 			yyVAL.inst = yyDollar[2].inst
 		}
 	case 23:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:100
+		//line hoc.y:97
 		{
 			Opr(Mod)
 		}
 	case 24:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:101
+		//line hoc.y:98
 		{
 			Opr(Add)
 		}
 	case 25:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:102
+		//line hoc.y:99
 		{
 			Opr(Sub)
 		}
 	case 26:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:103
+		//line hoc.y:100
 		{
 			Opr(Mul)
 		}
 	case 27:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:104
+		//line hoc.y:101
 		{
 			Opr(Div)
 		}
 	case 28:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:105
+		//line hoc.y:102
 		{
 			Opr(Power)
 		}
 	case 29:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:106
+		//line hoc.y:103
 		{
 			yyVAL.inst = Opr(Constpush)
 			Val(yyDollar[1].sym)
 		}
 	case 30:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:107
+		//line hoc.y:104
 		{
 			yyVAL.inst = yyDollar[2].inst
 			Opr(Negate)
 		}
 	case 31:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line hoc.y:108
+		//line hoc.y:105
 		{
 			yyVAL.inst = Opr(Varpush)
 			Val(yyDollar[1].sym)
@@ -848,7 +840,7 @@ yydefault:
 		}
 	case 33:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line hoc.y:110
+		//line hoc.y:107
 		{
 			yyVAL.inst = yyDollar[3].inst
 			Opr(Bltin)
@@ -856,55 +848,55 @@ yydefault:
 		}
 	case 34:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:111
+		//line hoc.y:108
 		{
 			Opr(Gt)
 		}
 	case 35:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:112
+		//line hoc.y:109
 		{
 			Opr(Ge)
 		}
 	case 36:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:113
+		//line hoc.y:110
 		{
 			Opr(Lt)
 		}
 	case 37:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:114
+		//line hoc.y:111
 		{
 			Opr(Le)
 		}
 	case 38:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:115
+		//line hoc.y:112
 		{
 			Opr(Eq)
 		}
 	case 39:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:116
+		//line hoc.y:113
 		{
 			Opr(Ne)
 		}
 	case 40:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:117
+		//line hoc.y:114
 		{
 			Opr(And)
 		}
 	case 41:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line hoc.y:118
+		//line hoc.y:115
 		{
 			Opr(Or)
 		}
 	case 42:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line hoc.y:119
+		//line hoc.y:116
 		{
 			yyVAL.inst = yyDollar[2].inst
 			Opr(Not)

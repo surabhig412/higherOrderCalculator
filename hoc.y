@@ -39,10 +39,9 @@ list:   /* empty */
 asgn: VAR '=' expr {$$ = $3; Opr(Varpush); Val($1); Opr(Assign)}
       ;
 
-stmt:   expr          {fmt.Println("while expr called"); Opr(Print)}
+stmt:   expr          {Opr(Pop)}
       | PRINT expr   {Opr(PrExpr); $$=$2;}
       | while cond stmt end {
-          fmt.Println("while stmt called, $2: ", $2, " $3: ", $3, " $4: ", $4);
           WhileBodyCounter = len(Prog)
           ($3).Code()
           WhileNextCounter = len(Prog)
@@ -53,7 +52,6 @@ stmt:   expr          {fmt.Println("while expr called"); Opr(Print)}
           }
       }
       | if cond stmt end {
-          fmt.Println("if stmt called, $2: ", $2, " $3: ", $3, " $4: ", $4);
           ($3).Code()
           IfNextCounter = len(Prog)
           if $4 == nil {
@@ -63,7 +61,6 @@ stmt:   expr          {fmt.Println("while expr called"); Opr(Print)}
           }
       }
       | if cond stmt end else stmt end {
-          fmt.Println("if else stmt called, $2: ", $2, " $3: ", $3, " $4: ", $4, " $6: ", $6, " $7: ", $7);
           ($3).Code()
 
           ($6).Code()
@@ -76,13 +73,13 @@ stmt:   expr          {fmt.Println("while expr called"); Opr(Print)}
       }
       | '{'stmtlist'}'    {$$ = $2}
       ;
-cond:   '('expr')'    {fmt.Println("while cond called"); STOP.Code(); $$ = $2; IfBodyCounter = len(Prog)}
+cond:   '('expr')'    {STOP.Code(); $$ = $2; IfBodyCounter = len(Prog)}
       ;
 
-while:  WHILE         {fmt.Println("while called"); $$=Opr(Whilecode); STOP.Code(); STOP.Code(); CondCounter = len(Prog);}
+while:  WHILE         {$$=Opr(Whilecode); STOP.Code(); STOP.Code(); CondCounter = len(Prog);}
       ;
 
-else:   ELSE          {fmt.Println("else called"); IfElseCounter = len(Prog)}
+else:   ELSE          {IfElseCounter = len(Prog)}
       ;
 
 if:     IF            {$$=Opr(Ifcode); STOP.Code(); STOP.Code(); STOP.Code(); CondCounter = len(Prog);}
@@ -143,7 +140,6 @@ func (l *Lexer) Lex(lval *yySymType) int {
     f, _ := strconv.ParseFloat(str, 64)
     s := &Symbol{Type: NUMBER, Val: f}
     lval.sym = s
-    fmt.Println("NUMBER: ", s)
     return NUMBER
   }
 

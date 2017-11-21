@@ -22,12 +22,10 @@ var WhileBodyCounter, WhileNextCounter, IfBodyCounter, IfNextCounter, IfElseCoun
 var STOP Inst = nil
 
 func (d Datum) Push() {
-	fmt.Println("push called")
 	stack = append(stack, d)
 }
 
 func Pop() interface{} {
-	fmt.Println("pop called")
 	length := len(stack)
 	if length == 0 {
 		log.Fatalf("stack underflow")
@@ -38,7 +36,6 @@ func Pop() interface{} {
 }
 
 func (inst Inst) Code() *Inst {
-	fmt.Println("code called: ", inst)
 	var oldProg *Inst
 	if len(Prog) != 0 {
 		oldProg = &Prog[len(Prog)-1]
@@ -48,7 +45,6 @@ func (inst Inst) Code() *Inst {
 }
 
 func Execute() {
-	fmt.Println("execute called: prog: ", Prog)
 	pc = Prog[pCounter]
 	if pc == nil {
 		pCounter++
@@ -59,13 +55,11 @@ func Execute() {
 		pCounter++
 		pc = Prog[pCounter]
 	}
-	fmt.Println("execute finished")
 }
 
 func Constpush() interface{} {
 	pCounter++
 	pc = Prog[pCounter]
-	fmt.Println("constpush: ", pc, pc())
 	d := &Datum{Sym: *pc().(*Symbol)}
 	d.Val = d.Sym.Val
 	d.Push()
@@ -282,13 +276,10 @@ func Not() interface{} {
 }
 
 func Whilecode() interface{} {
-	fmt.Println("In Whilecode: ", pc)
-	fmt.Println("WhileBodyCounter, WhileNextCounter, CondCounter: ", WhileBodyCounter, WhileNextCounter, CondCounter)
 	savepCounter := pCounter
 	pCounter = CondCounter
 	Execute()
 	d := Pop().(Datum)
-	fmt.Println("condition data: ", d)
 	for d.Val == 1 {
 		pCounter = savepCounter
 		Execute()
@@ -301,12 +292,9 @@ func Whilecode() interface{} {
 }
 
 func Ifcode() interface{} {
-	fmt.Println("In Ifcode: ", pc)
-	fmt.Println("IfBodyCounter, IfElseCounter, CondCounter, IfNextCounter: ", IfBodyCounter, IfElseCounter, CondCounter, IfNextCounter)
 	pCounter = CondCounter
 	Execute()
 	d := Pop().(Datum)
-	fmt.Println("condition data: ", d)
 	if d.Val == 1 {
 		pCounter = IfBodyCounter
 		Execute()
@@ -321,7 +309,6 @@ func Ifcode() interface{} {
 }
 
 func PrExpr() interface{} {
-	fmt.Println("In PrExpr: ", pc)
 	d := Pop().(Datum)
 	fmt.Printf("\t%v\n", d.Val)
 	return nil

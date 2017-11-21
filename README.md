@@ -45,7 +45,7 @@ Example: 5 > 7
 Program returns 0(false) or 1(true)
 ```
 
-#### Loops
+#### Conditional Operations
 
 ###### While loop
 
@@ -53,8 +53,14 @@ Program returns 0(false) or 1(true)
 while (3<5) 4+5
 ```
 
-###### If loop
+###### If-Else statement
 
 ```
 if (3<5) 4+5 else 6+7
+```
+
+#### Print Operations
+
+```
+print 4*7
 ```
