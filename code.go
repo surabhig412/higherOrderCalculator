@@ -239,39 +239,37 @@ func Ne() interface{} {
 }
 
 func And() interface{} {
-	// 	d2 := Pop().(Datum)
-	// 	d1 := Pop().(Datum)
-	// 	if d1.Val && d2.Val {
-	// 		d1.Val = 1
-	// 	} else {
-	// 		d1.Val = 0
-	// 	}
-	// 	d1.Push()
+	d2 := Pop().(Datum)
+	d1 := Pop().(Datum)
+	if d1.Val == 1 && d2.Val == 1 {
+		d1.Val = 1
+	} else {
+		d1.Val = 0
+	}
+	d1.Push()
 	return nil
 }
 
-//
 func Or() interface{} {
-	// 	d2 := Pop().(Datum)
-	// 	d1 := Pop().(Datum)
-	// 	if d1.Val || d2.Val {
-	// 		d1.Val = 1
-	// 	} else {
-	// 		d1.Val = 0
-	// 	}
-	// 	d1.Push()
+	d2 := Pop().(Datum)
+	d1 := Pop().(Datum)
+	if d1.Val == 1 || d2.Val == 1 {
+		d1.Val = 1
+	} else {
+		d1.Val = 0
+	}
+	d1.Push()
 	return nil
 }
 
-//
 func Not() interface{} {
-	// 	d1 := Pop().(Datum)
-	// 	if !d1.Val {
-	// 		d1.Val = 1
-	// 	} else {
-	// 		d1.Val = 0
-	// 	}
-	// 	d1.Push()
+	d1 := Pop().(Datum)
+	if d1.Val == 0 {
+		d1.Val = 1
+	} else {
+		d1.Val = 0
+	}
+	d1.Push()
 	return nil
 }
 

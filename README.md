@@ -40,8 +40,8 @@ $ abs(-90)
 #### Relational Operations
 
 ```
->, >=, <, <=, ==, !=
-Example: 5 > 7
+>, >=, <, <=, ==, !=, &&, ||, !
+Example: (5 < 7) && (2 < 9)
 Program returns 0(false) or 1(true)
 ```
 
